@@ -15,6 +15,7 @@ public class PlayerStateMachine : MonoBehaviour {
     public Crosshair crosshair;
     public Collider playerCollider;
     public PlayerStates startingState = PlayerStates.Booting;
+    public SunCrystalCircleMeter crystalMeter;
 
     private StateMachine<PlayerStates> fsm;
     private StateMachine<MovementStates> movementStateMachine;
@@ -39,7 +40,10 @@ public class PlayerStateMachine : MonoBehaviour {
 
     void Default_Update()
     {
-        
+        if (playerInput.shot)
+        {
+            crystalMeter.Activate();
+        }
     }
 
     private void UpdateSynergyInput()
