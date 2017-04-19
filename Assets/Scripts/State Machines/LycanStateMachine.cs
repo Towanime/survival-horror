@@ -5,6 +5,7 @@ using MonsterLove.StateMachine;
 
 public class LycanStateMachine : MonoBehaviour {
 
+    private const string lycanTag = "Lycan";
     public Camera playerCamera;
     public GameObject player;
     public GameObject lycan;
@@ -28,6 +29,8 @@ public class LycanStateMachine : MonoBehaviour {
 
     private Vector3 noYVector = new Vector3(1, 0, 1);
 
+    private bool hiddenBehindObstacle;
+
     void Awake()
     {
         fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
@@ -49,6 +52,7 @@ public class LycanStateMachine : MonoBehaviour {
 
     void WaitingForRespawn_Enter()
     {
+        hiddenBehindObstacle = false;
         timerStartPoint = Time.time;
         nextSpawnTimeInterval = Random.Range(minTimeBetweenSpawns, maxTimeBetweenSpawns);
     }
@@ -94,9 +98,7 @@ public class LycanStateMachine : MonoBehaviour {
         }
 
         Vector3 direction = rotation * playerForward;
-
         float distance = Random.Range(minSpawnDistanceFromPlayer, maxSpawnDistanceFromPlayer);
-
         return player.transform.position + (direction * distance);
     }
 
@@ -108,13 +110,14 @@ public class LycanStateMachine : MonoBehaviour {
 
     void WaitingForFirstContact_Update()
     {
-        Vector3 cameraPosition = playerCamera.transform.position;
+        CheckForDespawn();
+        /*Vector3 cameraPosition = playerCamera.transform.position;
         RaycastHit hitInfo;
         bool hit = Physics.Raycast(cameraPosition, playerCamera.transform.forward, out hitInfo);
 
         if (hit)
         {
-            if (hitInfo.collider.gameObject.CompareTag("Lycan"))
+            if (hitInfo.collider.gameObject.CompareTag(lycanTag))
             {
                 fsm.ChangeState(LycanStates.StaringAtPlayer);
             } else
@@ -124,8 +127,46 @@ public class LycanStateMachine : MonoBehaviour {
         } else if ()
         {
 
-        }
+        }*/
     }
 
-    void
+    void WaitingForReContact_Update()
+    {
+    }
+
+    void StaringAtPlayer_Update()
+    {
+    }
+
+    private void CheckForDespawn()
+    {
+        bool newHiddenBehindObstacle = IshiddenBehindObstacle();
+        // If lycan was visible before but its now hidden, it has a % of dissapearing
+        if (!hiddenBehindObstacle && newHiddenBehindObstacle && IsCursorOnLycan())
+        {
+            float random = Random.Range(0, 1f);
+            if (random <= chanceToDespawn)
+            {
+                fsm.ChangeState(LycanStates.WaitingForRespawn);
+            }
+        }
+        hiddenBehindObstacle = newHiddenBehindObstacle;
+    }
+
+    private bool IsCursorOnLycan()
+    {
+        Vector3 cameraPosition = playerCamera.transform.position;
+        float distance = Vector3.Distance(lycan.transform.position, cameraPosition);
+        RaycastHit hitInfo;
+        return Physics.Raycast(cameraPosition, playerCamera.transform.forward, out hitInfo, distance, lycanLayer);
+    }
+
+    private bool IshiddenBehindObstacle()
+    {
+        Vector3 cameraPosition = playerCamera.transform.position;
+        Vector3 direction = lycan.transform.position - cameraPosition;
+        RaycastHit hitInfo;
+        bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
+        return !hit || !hitInfo.collider.gameObject.CompareTag(lycanTag);
+    }
 }
