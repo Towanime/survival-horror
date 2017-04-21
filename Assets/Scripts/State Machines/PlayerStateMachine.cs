@@ -14,7 +14,7 @@ public class PlayerStateMachine : MonoBehaviour {
     public int dashCost;
     public Crosshair crosshair;
     public Collider playerCollider;
-    public PlayerStates startingState = PlayerStates.Booting;
+    public PlayerStates startingState = PlayerStates.Default;
     public SunCrystalCircleMeter crystalMeter;
 
     private StateMachine<PlayerStates> fsm;
