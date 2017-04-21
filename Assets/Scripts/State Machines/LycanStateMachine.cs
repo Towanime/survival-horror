@@ -6,6 +6,8 @@ using MonsterLove.StateMachine;
 public class LycanStateMachine : MonoBehaviour {
 
     private const string lycanTag = "Lycan";
+    private const string lycanEyesColliderTag = "LycanEyesCollider";
+
     public Camera playerCamera;
     public GameObject player;
     public GameObject lycan;
@@ -19,17 +21,19 @@ public class LycanStateMachine : MonoBehaviour {
     public float chanceToDespawn = 0.05f;
     public int spawnTries = 3;
 
-    public LayerMask lycanLayer;
+    public LayerMask obstacleIgnoreLayer;
+    public LayerMask lycanContactAreaLayer;
 
-    private float timerStartPoint;
-
-    private float nextSpawnTimeInterval;
+    public Transform topLeftEyeTransform;
+    public Transform topRightEyeTransform;
+    public Transform bottomLeftEyeTransform;
+    public Transform bottomRightEyeTransform;
 
     private StateMachine<LycanStates> fsm;
+    private float timerStartPoint;
+    private float nextSpawnTimeInterval;
 
-    private Vector3 noYVector = new Vector3(1, 0, 1);
-
-    private bool hiddenBehindObstacle;
+    private bool visibleByCamera;
 
     void Awake()
     {
@@ -52,7 +56,8 @@ public class LycanStateMachine : MonoBehaviour {
 
     void WaitingForRespawn_Enter()
     {
-        hiddenBehindObstacle = false;
+        lycan.SetActive(false);
+        visibleByCamera = false;
         timerStartPoint = Time.time;
         nextSpawnTimeInterval = Random.Range(minTimeBetweenSpawns, maxTimeBetweenSpawns);
     }
@@ -89,9 +94,8 @@ public class LycanStateMachine : MonoBehaviour {
         float angle = Random.Range(minAngle, maxAngle);
         Quaternion rotation = Quaternion.Euler(0, angle, 0);
 
-        Vector3 playerForward = playerCamera.transform.forward;
-        playerForward.y = 0;
-        playerForward = playerForward.normalized;
+        Vector3 noY = new Vector3(1, 0, 1);
+        Vector3 playerForward = Vector3.Scale(playerCamera.transform.forward, noY).normalized;
         if (playerForward.magnitude == 0)
         {
             playerForward = Vector3.forward;
@@ -111,23 +115,6 @@ public class LycanStateMachine : MonoBehaviour {
     void WaitingForFirstContact_Update()
     {
         CheckForDespawn();
-        /*Vector3 cameraPosition = playerCamera.transform.position;
-        RaycastHit hitInfo;
-        bool hit = Physics.Raycast(cameraPosition, playerCamera.transform.forward, out hitInfo);
-
-        if (hit)
-        {
-            if (hitInfo.collider.gameObject.CompareTag(lycanTag))
-            {
-                fsm.ChangeState(LycanStates.StaringAtPlayer);
-            } else
-            {
-
-            }
-        } else if ()
-        {
-
-        }*/
     }
 
     void WaitingForReContact_Update()
@@ -140,9 +127,12 @@ public class LycanStateMachine : MonoBehaviour {
 
     private void CheckForDespawn()
     {
-        bool newHiddenBehindObstacle = IshiddenBehindObstacle();
+        bool oldVisibleByCamera = visibleByCamera;
+        visibleByCamera = IsVisibleByCamera();
+        bool isCursorOnLycan = IsCursorOnLycan();
+        Debug.Log("Lycan visible by camera: " + visibleByCamera + ". Player cursor on Lycan: " + isCursorOnLycan);
         // If lycan was visible before but its now hidden, it has a % of dissapearing
-        if (!hiddenBehindObstacle && newHiddenBehindObstacle && IsCursorOnLycan())
+        if (oldVisibleByCamera && !visibleByCamera && isCursorOnLycan)
         {
             float random = Random.Range(0, 1f);
             if (random <= chanceToDespawn)
@@ -150,7 +140,6 @@ public class LycanStateMachine : MonoBehaviour {
                 fsm.ChangeState(LycanStates.WaitingForRespawn);
             }
         }
-        hiddenBehindObstacle = newHiddenBehindObstacle;
     }
 
     private bool IsCursorOnLycan()
@@ -158,15 +147,43 @@ public class LycanStateMachine : MonoBehaviour {
         Vector3 cameraPosition = playerCamera.transform.position;
         float distance = Vector3.Distance(lycan.transform.position, cameraPosition);
         RaycastHit hitInfo;
-        return Physics.Raycast(cameraPosition, playerCamera.transform.forward, out hitInfo, distance, lycanLayer);
+        Debug.DrawRay(cameraPosition, playerCamera.transform.forward * distance, Color.red);
+        return Physics.Raycast(cameraPosition, playerCamera.transform.forward, out hitInfo, distance, lycanContactAreaLayer);
     }
 
-    private bool IshiddenBehindObstacle()
+    private bool IsVisibleByCamera()
     {
-        Vector3 cameraPosition = playerCamera.transform.position;
-        Vector3 direction = lycan.transform.position - cameraPosition;
+        Vector3 bottomLeftCameraPosition = playerCamera.ViewportToWorldPoint(new Vector3(0, 0, playerCamera.nearClipPlane));
+        bool visible = IsVisibleByCamera(bottomLeftCameraPosition, bottomLeftEyeTransform);
+        if (!visible)
+        {
+            Vector3 bottomRightCameraPosition = playerCamera.ViewportToWorldPoint(new Vector3(1, 0, playerCamera.nearClipPlane));
+            visible = IsVisibleByCamera(bottomRightCameraPosition, bottomRightEyeTransform);
+        }
+        if (!visible)
+        {
+            Vector3 topLeftCameraPosition = playerCamera.ViewportToWorldPoint(new Vector3(0, 1, playerCamera.nearClipPlane));
+            visible = IsVisibleByCamera(topLeftCameraPosition, topLeftEyeTransform);
+        }
+        if (!visible)
+        {
+            Vector3 topRightCameraPosition = playerCamera.ViewportToWorldPoint(new Vector3(1, 1, playerCamera.nearClipPlane));
+            visible = IsVisibleByCamera(topRightCameraPosition, topRightEyeTransform);
+        }
+
+        return visible;
+    }
+
+    private bool IsVisibleByCamera(Vector3 cameraPosition, Transform transform)
+    {
+        Vector3 position = transform.position;
+        Vector3 direction = position - cameraPosition;
         RaycastHit hitInfo;
-        bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
-        return !hit || !hitInfo.collider.gameObject.CompareTag(lycanTag);
+        bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude, ~obstacleIgnoreLayer);
+        if (!hit)
+        {
+            Debug.DrawRay(cameraPosition, direction, Color.blue);
+        }
+        return !hit;
     }
 }
