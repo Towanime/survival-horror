@@ -13,8 +13,9 @@ public class LycanStateMachine : MonoBehaviour {
     public GameObject lycan;
     public float minTimeBetweenSpawns = 20;
     public float maxTimeBetweenSpawns = 30;
-    public float minSpawnDistanceFromPlayer = 20;
+    public float minSpawnDistanceFromPlayer = 25;
     public float maxSpawnDistanceFromPlayer = 30;
+    public float distanceFromPlayerForGameOver = 10;
     public float timeToFindLycan = 3;
     public float timeToReadjustSight = 1;
     [Range(0, 1)]
@@ -30,14 +31,19 @@ public class LycanStateMachine : MonoBehaviour {
     public Transform bottomRightEyeTransform;
 
     private StateMachine<LycanStates> fsm;
-    private float timerStartPoint;
     private float nextSpawnTimeInterval;
-
     private bool visibleByCamera;
+
+    private float timer;
 
     void Awake()
     {
         fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
+    }
+
+    void Update()
+    {
+        Debug.Log("Current Lycan state: " + fsm.State + ", Timer: " + timer);
     }
 
     void Inactive_Enter()
@@ -56,18 +62,20 @@ public class LycanStateMachine : MonoBehaviour {
 
     void WaitingForRespawn_Enter()
     {
+        timer = 0;
         lycan.SetActive(false);
         visibleByCamera = false;
-        timerStartPoint = Time.time;
         nextSpawnTimeInterval = Random.Range(minTimeBetweenSpawns, maxTimeBetweenSpawns);
     }
 
     void WaitingForRespawn_Update()
     {
-        if (Time.time - timerStartPoint >= nextSpawnTimeInterval)
+        timer += Time.deltaTime;
+        if (timer >= nextSpawnTimeInterval)
         {
             fsm.ChangeState(LycanStates.CalculatingSpawnPosition);
         }
+        CheckIfPlayerHasEnteredSafeZone();
     }
 
     void CalculatingSpawnPosition_Update()
@@ -85,9 +93,10 @@ public class LycanStateMachine : MonoBehaviour {
                 break;
             }
         }
+        CheckIfPlayerHasEnteredSafeZone();
     }
 
-    Vector3 CalculateSpawnPosition()
+    private Vector3 CalculateSpawnPosition()
     {
         float minAngle = playerCamera.fieldOfView;
         float maxAngle = 360 - playerCamera.fieldOfView;
@@ -110,36 +119,96 @@ public class LycanStateMachine : MonoBehaviour {
     {
         // Play Sfx
         lycan.SetActive(true);
+        timer = 0;
     }
 
     void WaitingForFirstContact_Update()
     {
-        CheckForDespawn();
+        bool visibleByCamera = IsVisibleByCamera();
+        bool cursorOnLycan = IsCursorOnLycan();
+        bool playerStaringAtLycan = visibleByCamera && cursorOnLycan;
+        bool despawned = CheckForDespawn(visibleByCamera, cursorOnLycan);
+        if (despawned)
+        {
+            fsm.ChangeState(LycanStates.WaitingForRespawn);
+        }
+        else if (playerStaringAtLycan)
+        {
+            fsm.ChangeState(LycanStates.StaringContestWithPlayer);
+        }
+        else
+        {
+            timer += (visibleByCamera) ? Time.deltaTime : 0;
+            CheckIfTimerHasRunOut(timeToFindLycan);
+        }
+        CheckIfPlayerHasEnteredSafeZone();
+        CheckIfPlayerIsTooClose(visibleByCamera);
     }
 
-    void WaitingForReContact_Update()
+    void StaringContestWithPlayer_Enter()
     {
+        timer = 0;
     }
 
-    void StaringAtPlayer_Update()
+    void StaringContestWithPlayer_Update()
     {
+        bool visibleByCamera = IsVisibleByCamera();
+        bool cursorOnLycan = IsCursorOnLycan();
+        bool playerStaringAtLycan = visibleByCamera && cursorOnLycan;
+        bool despawned = CheckForDespawn(visibleByCamera, cursorOnLycan);
+        if (despawned)
+        {
+            fsm.ChangeState(LycanStates.WaitingForRespawn);
+        }
+        else
+        {
+            timer = (!visibleByCamera || playerStaringAtLycan) ? 0 : timer + Time.deltaTime;
+            CheckIfTimerHasRunOut(timeToReadjustSight);
+        }
+        CheckIfPlayerHasEnteredSafeZone();
+        CheckIfPlayerIsTooClose(visibleByCamera);
     }
 
-    private void CheckForDespawn()
+    private void CheckIfTimerHasRunOut(float maxTime)
+    {
+        if (timer >= maxTime)
+        {
+            fsm.ChangeState(LycanStates.GameOver);
+        }
+    }
+
+    private void CheckIfPlayerHasEnteredSafeZone()
+    {
+        bool playerEnteredSafeZone = false;
+        if (playerEnteredSafeZone)
+        {
+            fsm.ChangeState(LycanStates.Inactive);
+        }
+    }
+
+    private void CheckIfPlayerIsTooClose(bool visibleByCamera)
+    {
+        float distance = Vector3.Distance(player.transform.position, lycan.transform.position);
+        if (visibleByCamera && distance <= distanceFromPlayerForGameOver)
+        {
+            fsm.ChangeState(LycanStates.GameOver);
+        }
+    }
+
+    private bool CheckForDespawn(bool visibleByCamera, bool cursorOnLycan)
     {
         bool oldVisibleByCamera = visibleByCamera;
-        visibleByCamera = IsVisibleByCamera();
-        bool isCursorOnLycan = IsCursorOnLycan();
-        Debug.Log("Lycan visible by camera: " + visibleByCamera + ". Player cursor on Lycan: " + isCursorOnLycan);
+        this.visibleByCamera = visibleByCamera;
         // If lycan was visible before but its now hidden, it has a % of dissapearing
-        if (oldVisibleByCamera && !visibleByCamera && isCursorOnLycan)
+        if (oldVisibleByCamera && !visibleByCamera && cursorOnLycan)
         {
             float random = Random.Range(0, 1f);
             if (random <= chanceToDespawn)
             {
-                fsm.ChangeState(LycanStates.WaitingForRespawn);
+                return true;
             }
         }
+        return false;
     }
 
     private bool IsCursorOnLycan()
