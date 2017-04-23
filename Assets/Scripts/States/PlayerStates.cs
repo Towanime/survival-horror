@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum PlayerStates {
-
-    Booting,
     Default,
     Reloading,
     Dashing
