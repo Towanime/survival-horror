@@ -6,16 +6,15 @@ public class DecoyManager : MonoBehaviour {
 
     public int maxNumberOfDecoys = 30;
     public float alphaSpeed = 6f;
-    public float minSpawnDistanceFromPlayer = 20;
+    public float minSpawnDistanceFromPlayer = 25;
     public float maxSpawnDistanceFromPlayer = 80;
-    public float minDespawnDistanceFromPlayer = 10;
+    public float minDespawnDistanceFromPlayer = 15;
     public float maxDespawnDistanceFromPlayer = 80;
     public float minY = 0.5f;
-    public float maxY = 1.5f;
+    public float maxY = 2f;
 
     private GameObject player;
     private Camera playerCamera;
-    private SunCrystalCircleMeter sunCrystalCircleMeter;
     private List<GameObject> activeDecoys;
     private List<GameObject> despawningDecoys;
     private bool active;
@@ -26,12 +25,10 @@ public class DecoyManager : MonoBehaviour {
         despawningDecoys = new List<GameObject>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerCamera = player.GetComponentInChildren<Camera>();
-        sunCrystalCircleMeter = player.GetComponentInChildren<SunCrystalCircleMeter>();
     }
 	
 	void Update ()
     {
-        Active = !sunCrystalCircleMeter.Activated;
         UpdateActiveDecoys();
         UpdateDespawningDecoys();
         if (active)
@@ -48,8 +45,8 @@ public class DecoyManager : MonoBehaviour {
             bool canDespawnDecoy = CanDespawnDecoy(decoy);
             if (canDespawnDecoy)
             {
-                activeDecoys.RemoveAt(i);
                 despawningDecoys.Add(decoy);
+                activeDecoys.RemoveAt(i);
             }
             else
             {
@@ -116,7 +113,8 @@ public class DecoyManager : MonoBehaviour {
         Vector3 direction = rotation * playerForward;
         float distance = Random.Range(minSpawnDistanceFromPlayer, maxSpawnDistanceFromPlayer);
         Vector3 newY = new Vector3(0, Random.Range(minY, maxY), 0);
-        return player.transform.position + (direction * distance) + newY;
+        Vector3 playerPositon = Vector3.Scale(player.transform.position, noY);
+        return playerPositon + (direction * distance) + newY;
     }
 
     void ReleaseDecoy(GameObject decoy)
@@ -154,6 +152,7 @@ public class DecoyManager : MonoBehaviour {
         for (int i = activeDecoys.Count - 1; i >= 0; i--)
         {
             despawningDecoys.Add(activeDecoys[i]);
+            activeDecoys.RemoveAt(i);
         }
     }
 }
