@@ -150,5 +150,8 @@ public class SunCrystalCircleMeter : MonoBehaviour {
         }
     }
 
-
+    public bool Activated
+    {
+        get { return activated; }
+    }
 }

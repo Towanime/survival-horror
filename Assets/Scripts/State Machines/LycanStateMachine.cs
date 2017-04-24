@@ -188,7 +188,10 @@ public class LycanStateMachine : MonoBehaviour {
 
     private void CheckIfPlayerIsTooClose(bool visibleByCamera)
     {
-        float distance = Vector3.Distance(player.transform.position, lycan.transform.position);
+        Vector3 noY = new Vector3(1, 0, 1);
+        Vector3 playerPosition = Vector3.Scale(player.transform.position, noY);
+        Vector3 lycanPosition = Vector3.Scale(lycan.transform.position, noY);
+        float distance = Vector3.Distance(playerPosition, lycanPosition);
         if (visibleByCamera && distance <= distanceFromPlayerForGameOver)
         {
             fsm.ChangeState(LycanStates.GameOver);
