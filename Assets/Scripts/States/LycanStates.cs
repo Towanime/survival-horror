@@ -8,6 +8,6 @@ public enum LycanStates {
     WaitingForRespawn,
     CalculatingSpawnPosition,
     WaitingForFirstContact,
-    WaitingForReContact,
-    StaringAtPlayer
+    StaringContestWithPlayer,
+    GameOver
 }
