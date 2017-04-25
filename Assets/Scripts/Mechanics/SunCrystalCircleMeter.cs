@@ -53,6 +53,10 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     private bool justLit; // used to check if a player
     private bool fadingLight;
     private float currentLightTime;
+    private float traversedTimeLight;
+    // temporal light range
+    private float intensityFrom;
+    private float intensityTo;
 
 
     // Use this for initialization
@@ -74,12 +78,10 @@ public class SunCrystalCircleMeter : MonoBehaviour {
          if (indicatorRectangleTransform.localScale.x >= currentRange.to)
         //if (traversedTime > 0.8f)
         {
-            Debug.Log("Fading!");
             if (remainingIndicatorFadingTime == 0)
             {
                 // set remaining time until the overgrow finishes
                 remainingIndicatorFadingTime = secondsToFill - currentTime;
-                Debug.Log("Remaining: " + remainingIndicatorFadingTime);
             }
             Color temp = indicatorImage.color;
             temp.a = Mathf.Lerp(1, 0, currentIndicatorFadeTime / remainingIndicatorFadingTime);
@@ -98,6 +100,12 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             activated = false;
             fadingIndicator = false;
             // turn off the light if it wasn't pressed right this time
+            if (justLit != lit)
+            {
+                fadingLight = true;
+                intensityFrom = maximumLightIntensity;
+                intensityTo = minimumLightIntensity;
+            }
             lit = justLit;
             justLit = false; // reset for next loop
             Invoke("ShowIndicator", 0.1f);
@@ -108,15 +116,30 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             currentCircleImage.color = Color.Lerp(activationColor, Color.white, currentColorFadeTime / remainingTime);
             currentColorFadeTime += Time.deltaTime;
         }
-      /*  if (justLit)
+        if (fadingLight)
         {
-            crystalLight.intensity = Mathf.Lerp(minimumLightIntensity, maximumLightIntensity, traversedTime);//currentColorFadeTime / remainingTime);
+            traversedTimeLight = currentLightTime / secondsToFill;
             currentLightTime += Time.deltaTime;
+            /*if (justLit)
+            {
+                crystalLight.intensity = Mathf.Lerp(minimumLightIntensity, maximumLightIntensity, traversedTimeLight);//currentColorFadeTime / remainingTime);
+                
+                Debug.Log("Fading in light");
+            }
+            else// if (!justLit && crystalLight.intensity != 1)
+            {
+                crystalLight.intensity = Mathf.Lerp(maximumLightIntensity, minimumLightIntensity, traversedTimeLight);
+                Debug.Log("Fading out light");
+            }*/
+
+            crystalLight.intensity = Mathf.Lerp(intensityFrom, intensityTo, traversedTimeLight);
+
+            if (traversedTimeLight > 1.0f)
+            {
+                fadingLight = false;
+                currentLightTime = 0;
+            }
         }
-        else if (!justLit && crystalLight.intensity != 1)
-        {
-            crystalLight.intensity = Mathf.Lerp(maximumLightIntensity, minimumLightIntensity, traversedTime);
-        }*/
     }
 
     private void ShowIndicator()
@@ -172,12 +195,16 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             activationColor = onSuccessColor;
             justLit = true;
             lit = true;
+            intensityFrom = minimumLightIntensity;
+            intensityTo = maximumLightIntensity;
             return true;
         }else
         {
             currentCircleImage.color = onFailureColor;
             activationColor = onFailureColor;
             lit = false;
+            intensityFrom = maximumLightIntensity;
+            intensityTo = minimumLightIntensity;
             return false;
         }
     }
