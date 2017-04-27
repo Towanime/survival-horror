@@ -25,7 +25,6 @@ public class GameStateMachine : MonoBehaviour {
 
     void Running_Update()
     {
-        // Missing check if player is in safe zone
         decoyManager.Active = !playerIsInSafeArea && !sunCrystalCircleMeter.IsLit;
     }
 
