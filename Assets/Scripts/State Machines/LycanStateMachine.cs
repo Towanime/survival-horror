@@ -30,7 +30,7 @@ public class LycanStateMachine : MonoBehaviour {
     public Transform bottomLeftEyeTransform;
     public Transform bottomRightEyeTransform;
 
-    private StateMachine<LycanStates> fsm;
+    public StateMachine<LycanStates> fsm;
     private float nextSpawnTimeInterval;
     private bool visibleByCamera;
 
@@ -51,15 +51,6 @@ public class LycanStateMachine : MonoBehaviour {
         lycan.SetActive(false);
     }
 
-    void Inactive_Update()
-    {
-        bool playerOutsideSafeZone = false;
-        if (playerOutsideSafeZone)
-        {
-            fsm.ChangeState(LycanStates.WaitingForRespawn);
-        }
-    }
-
     void WaitingForRespawn_Enter()
     {
         timer = 0;
@@ -75,7 +66,6 @@ public class LycanStateMachine : MonoBehaviour {
         {
             fsm.ChangeState(LycanStates.CalculatingSpawnPosition);
         }
-        CheckIfPlayerHasEnteredSafeZone();
     }
 
     void CalculatingSpawnPosition_Update()
@@ -93,7 +83,6 @@ public class LycanStateMachine : MonoBehaviour {
                 break;
             }
         }
-        CheckIfPlayerHasEnteredSafeZone();
     }
 
     private Vector3 CalculateSpawnPosition()
@@ -141,7 +130,6 @@ public class LycanStateMachine : MonoBehaviour {
             timer += (visibleByCamera) ? Time.deltaTime : 0;
             CheckIfTimerHasRunOut(timeToFindLycan);
         }
-        CheckIfPlayerHasEnteredSafeZone();
         CheckIfPlayerIsTooClose(visibleByCamera);
     }
 
@@ -165,7 +153,6 @@ public class LycanStateMachine : MonoBehaviour {
             timer = (!visibleByCamera || playerStaringAtLycan) ? 0 : timer + Time.deltaTime;
             CheckIfTimerHasRunOut(timeToReadjustSight);
         }
-        CheckIfPlayerHasEnteredSafeZone();
         CheckIfPlayerIsTooClose(visibleByCamera);
     }
 
@@ -174,15 +161,6 @@ public class LycanStateMachine : MonoBehaviour {
         if (timer >= maxTime)
         {
             fsm.ChangeState(LycanStates.GameOver);
-        }
-    }
-
-    private void CheckIfPlayerHasEnteredSafeZone()
-    {
-        bool playerEnteredSafeZone = false;
-        if (playerEnteredSafeZone)
-        {
-            fsm.ChangeState(LycanStates.Inactive);
         }
     }
 

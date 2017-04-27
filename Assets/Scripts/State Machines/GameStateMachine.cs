@@ -6,6 +6,7 @@ using MonsterLove.StateMachine;
 public class GameStateMachine : MonoBehaviour {
 
     public DecoyManager decoyManager;
+    public LycanStateMachine lycanStateMachine;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
@@ -32,11 +33,13 @@ public class GameStateMachine : MonoBehaviour {
     {
         playerIsInSafeArea = true;
         fog.Disable();
+        lycanStateMachine.fsm.ChangeState(LycanStates.Inactive);
     }
 
     public void OnPlayerExitSafeArea()
     {
         playerIsInSafeArea = false;
         fog.Enable();
+        lycanStateMachine.fsm.ChangeState(LycanStates.WaitingForRespawn);
     }
 }
