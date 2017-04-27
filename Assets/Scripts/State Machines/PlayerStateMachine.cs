@@ -6,21 +6,13 @@ using MonsterLove.StateMachine;
 public class PlayerStateMachine : MonoBehaviour {
     
     public PlayerInput playerInput;
-    public Animator weaponAnimator;
-    public AnimationCurve dashingSpeedCurve;
     public GameObject player;
-    public float dashingDuration;
-    public float dashingMaxSpeed;
-    public int dashCost;
     public Crosshair crosshair;
-    public Collider playerCollider;
     public PlayerStates startingState = PlayerStates.Default;
     public SunCrystalCircleMeter crystalMeter;
 
     private StateMachine<PlayerStates> fsm;
     private StateMachine<MovementStates> movementStateMachine;
-    private float stateEnterTime;
-    private Vector3 dashDirection;
     private CharacterController characterController;
 
     void Awake()
@@ -30,12 +22,10 @@ public class PlayerStateMachine : MonoBehaviour {
         characterController = player.GetComponent<CharacterController>();
     }
 
-
     void Default_Enter()
     {
         movementStateMachine.ChangeState(MovementStates.Default);
         crosshair.enabled = true;
-        playerCollider.enabled = true;
     }
 
     void Default_Update()
@@ -46,29 +36,8 @@ public class PlayerStateMachine : MonoBehaviour {
         }
     }
 
-    private void UpdateSynergyInput()
+    public StateMachine<PlayerStates> FSM
     {
-     
-    }
-
-    void Dashing_Update()
-    {
-        float t = (Time.time - stateEnterTime) / dashingDuration;
-        float speedDelta = dashingSpeedCurve.Evaluate((Time.time - stateEnterTime) / dashingDuration);
-        float currentSpeed = Mathf.Lerp(0, dashingMaxSpeed, speedDelta);
-
-        Vector3 distanceToMove = dashDirection * currentSpeed * Time.deltaTime;
-        Vector3 nextPosition = distanceToMove + player.transform.position;
-        characterController.Move(distanceToMove);
-
-        if (t >= 1)
-        {
-            fsm.ChangeState(PlayerStates.Default);
-        }
-    }
-
-    public PlayerStates GetCurrentState()
-    {
-        return fsm.State;
+        get { return fsm; }
     }
 }

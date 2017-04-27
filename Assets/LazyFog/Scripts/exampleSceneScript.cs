@@ -28,7 +28,7 @@ public class exampleSceneScript : MonoBehaviour {
 		
 	}
 	
-	void OnGUI () {
+	/*void OnGUI () {
 		float dy = 25;
 		float y = 1;
 		float x2 = 200;
@@ -57,6 +57,6 @@ public class exampleSceneScript : MonoBehaviour {
 		GUI.Label(new Rect(25,dy*y,100,30), "Blue");
 		color.b = GUI.HorizontalSlider (new Rect (x2, dy*y++, 100, 30), color.b, 0.0f, 1.0f);
 		
-	}			
+	}*/
 	
 }
