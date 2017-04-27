@@ -12,7 +12,7 @@ public class Crosshair : MonoBehaviour
     }
 
     void OnGUI()
-    {
+    {   
         UnityEngine.Cursor.visible = false;
 
         Texture2D activeTexture;

@@ -7,6 +7,7 @@ public class GameStateMachine : MonoBehaviour {
 
     public DecoyManager decoyManager;
     public LycanStateMachine lycanStateMachine;
+    public PlayerStateMachine playerStateMachine;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
@@ -23,22 +24,37 @@ public class GameStateMachine : MonoBehaviour {
         fsm = StateMachine<GameStates>.Initialize(this, GameStates.Running);
     }
 
+    void Running_Enter()
+    {
+        playerStateMachine.FSM.ChangeState(PlayerStates.Default);
+        if (playerIsInSafeArea)
+        {
+            lycanStateMachine.FSM.ChangeState(LycanStates.WaitingForRespawn);
+        }
+    }
+
     void Running_Update()
     {
         decoyManager.Active = !playerIsInSafeArea && !sunCrystalCircleMeter.IsLit;
+    }
+
+    void GameOver_Enter()
+    {
+        playerStateMachine.FSM.ChangeState(PlayerStates.Inactive);
+        lycanStateMachine.FSM.ChangeState(LycanStates.Inactive);
     }
 
     public void OnPlayerEnterSafeArea()
     {
         playerIsInSafeArea = true;
         fog.Disable();
-        lycanStateMachine.fsm.ChangeState(LycanStates.Inactive);
+        lycanStateMachine.FSM.ChangeState(LycanStates.Inactive);
     }
 
     public void OnPlayerExitSafeArea()
     {
         playerIsInSafeArea = false;
         fog.Enable();
-        lycanStateMachine.fsm.ChangeState(LycanStates.WaitingForRespawn);
+        lycanStateMachine.FSM.ChangeState(LycanStates.WaitingForRespawn);
     }
 }

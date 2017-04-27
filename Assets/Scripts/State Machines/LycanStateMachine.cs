@@ -30,7 +30,7 @@ public class LycanStateMachine : MonoBehaviour {
     public Transform bottomLeftEyeTransform;
     public Transform bottomRightEyeTransform;
 
-    public StateMachine<LycanStates> fsm;
+    private StateMachine<LycanStates> fsm;
     private float nextSpawnTimeInterval;
     private bool visibleByCamera;
 
@@ -235,5 +235,10 @@ public class LycanStateMachine : MonoBehaviour {
             Debug.DrawRay(cameraPosition, direction, Color.blue);
         }
         return !hit;
+    }
+
+    public StateMachine<LycanStates> FSM
+    {
+        get { return fsm; }
     }
 }

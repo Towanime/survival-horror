@@ -36,8 +36,8 @@ public class PlayerStateMachine : MonoBehaviour {
         }
     }
 
-    public PlayerStates GetCurrentState()
+    public StateMachine<PlayerStates> FSM
     {
-        return fsm.State;
+        get { return fsm; }
     }
 }
