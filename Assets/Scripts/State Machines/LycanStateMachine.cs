@@ -21,6 +21,7 @@ public class LycanStateMachine : MonoBehaviour {
     [Range(0, 1)]
     public float chanceToDespawn = 0.05f;
     public int spawnTries = 3;
+    private float speed = 50;
 
     public LayerMask obstacleIgnoreLayer;
     public LayerMask lycanContactAreaLayer;
@@ -156,11 +157,32 @@ public class LycanStateMachine : MonoBehaviour {
         CheckIfPlayerIsTooClose(visibleByCamera);
     }
 
+    void GameOverSequenceStarted_Enter()
+    {
+        GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceStarted");
+    }
+
+    void GameOverSequenceStarted_Update()
+    {
+        Vector3 destination = player.transform.position;
+        Vector3 newPosition = Vector3.MoveTowards(lycan.transform.position, destination, speed * Time.deltaTime);
+        lycan.transform.position = newPosition;
+        if (Vector3.Distance(newPosition, destination) == 0)
+        {
+            fsm.ChangeState(LycanStates.GameOverSequenceEnded);
+        }
+    }
+
+    void GameOverSequenceEnded_Enter()
+    {
+        GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceEnded");
+    }
+
     private void CheckIfTimerHasRunOut(float maxTime)
     {
         if (timer >= maxTime)
         {
-            fsm.ChangeState(LycanStates.GameOver);
+            fsm.ChangeState(LycanStates.GameOverSequenceStarted);
         }
     }
 
@@ -172,7 +194,7 @@ public class LycanStateMachine : MonoBehaviour {
         float distance = Vector3.Distance(playerPosition, lycanPosition);
         if (visibleByCamera && distance <= distanceFromPlayerForGameOver)
         {
-            fsm.ChangeState(LycanStates.GameOver);
+            fsm.ChangeState(LycanStates.GameOverSequenceStarted);
         }
     }
 
