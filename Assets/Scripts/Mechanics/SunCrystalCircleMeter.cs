@@ -27,6 +27,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     public Color onSuccessColor = Color.green;
     public Color onFailureColor = Color.red;
     public Light crystalLight;
+    public float crystalFadingTime = 0.2f;
     public float minimumLightIntensity = 0f;
     public float maximumLightIntensity = 5f;
     // circle scale vairables
@@ -42,7 +43,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     // activation fade variables
     private Color activationColor;
     private float currentColorFadeTime;
-    private float remainingTime;
+    private float remainingTimeColor;
     // fade variables for the indicator
     private Image indicatorImage;
     private float currentIndicatorFadeTime;
@@ -76,7 +77,6 @@ public class SunCrystalCircleMeter : MonoBehaviour {
 
         // if the scale is out of the limit then start fading
          if (indicatorRectangleTransform.localScale.x >= currentRange.to)
-        //if (traversedTime > 0.8f)
         {
             if (remainingIndicatorFadingTime == 0)
             {
@@ -89,6 +89,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             currentIndicatorFadeTime += Time.deltaTime;
             fadingIndicator = true;
         }
+        // indicator is on full scale?
         if (traversedTime > 1.0f)
         {
             traversedTime = 0.0f;
@@ -103,36 +104,37 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             if (justLit != lit)
             {
                 fadingLight = true;
-                intensityFrom = maximumLightIntensity;
-                intensityTo = minimumLightIntensity;
+                FadeOutLight();
+                //IsLightFading();
             }
             lit = justLit;
             justLit = false; // reset for next loop
             Invoke("ShowIndicator", 0.1f);
         }
+        // fade color if necessary
+        FadeColor();
+
+        // fade light
+        FadeLight();
+    }
+
+    private void FadeColor()
+    {
         // color on the circle
         if (activated)
         {
-            currentCircleImage.color = Color.Lerp(activationColor, Color.white, currentColorFadeTime / remainingTime);
+            currentCircleImage.color = Color.Lerp(activationColor, Color.white, currentColorFadeTime / remainingTimeColor);
             currentColorFadeTime += Time.deltaTime;
         }
+    }
+
+    private void FadeLight()
+    {
         if (fadingLight)
         {
-            traversedTimeLight = currentLightTime / secondsToFill;
-            currentLightTime += Time.deltaTime;
-            /*if (justLit)
-            {
-                crystalLight.intensity = Mathf.Lerp(minimumLightIntensity, maximumLightIntensity, traversedTimeLight);//currentColorFadeTime / remainingTime);
-                
-                Debug.Log("Fading in light");
-            }
-            else// if (!justLit && crystalLight.intensity != 1)
-            {
-                crystalLight.intensity = Mathf.Lerp(maximumLightIntensity, minimumLightIntensity, traversedTimeLight);
-                Debug.Log("Fading out light");
-            }*/
-
+            traversedTimeLight = currentLightTime / crystalFadingTime;
             crystalLight.intensity = Mathf.Lerp(intensityFrom, intensityTo, traversedTimeLight);
+            currentLightTime += Time.deltaTime;
 
             if (traversedTimeLight > 1.0f)
             {
@@ -180,13 +182,12 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     /// <summary>
     /// Checks if the activation is successful depending on where there is in the indicator.
     /// </summary>
-    public bool Activate()
+    public void Activate()
     {
-        if (activated) return false;
+        if (activated) return;
 
         activated = true;
-        fadingLight = true;
-        remainingTime = secondsToFill - currentTime;
+        remainingTimeColor = secondsToFill - currentTime;
         float currentScale = indicatorRectangleTransform.localScale.x;
         // is between the success scales?
         if (currentScale >= currentRange.from && currentScale <= currentRange.to)
@@ -197,15 +198,40 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             lit = true;
             intensityFrom = minimumLightIntensity;
             intensityTo = maximumLightIntensity;
-            return true;
         }else
         {
             currentCircleImage.color = onFailureColor;
             activationColor = onFailureColor;
             lit = false;
-            intensityFrom = maximumLightIntensity;
+            FadeOutLight();
+            /*intensityFrom = crystalLight.intensity;
             intensityTo = minimumLightIntensity;
-            return false;
+            // reset light time when fading out
+            currentLightTime = 0;*/
+        }
+        IsLightFading();
+    }
+
+    private void FadeOutLight()
+    {
+        intensityFrom = crystalLight.intensity;
+        intensityTo = minimumLightIntensity;
+        // reset light time when fading out
+        currentLightTime = 0;
+    }
+
+    /// <summary>
+    /// Check if the light should fade in or out.
+    /// </summary>
+    private void IsLightFading()
+    {
+        if (crystalLight.intensity != intensityTo)
+        {
+            fadingLight = true;
+        }
+        else
+        {
+            fadingLight = false;
         }
     }
 
