@@ -203,6 +203,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             intensityTo = maximumLightIntensity;
             // trigger success
             animator.SetTrigger("Success");
+            SoundManager.Instance.Play(SoundId.CRYSTAL_CHIME);
         }else
         {
             currentCircleImage.color = onFailureColor;

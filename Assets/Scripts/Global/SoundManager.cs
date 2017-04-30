@@ -10,6 +10,7 @@ public class SoundManager : MonoBehaviour {
     public float globalSfxVolume = 1f;
     [Range(0f, 1f)]
     public float globalMusicVolume = 1f;
+    public float defaultFadeSpeed = 1f;
     public AudioClipInfo[] sounds;
 
     private Dictionary<SoundId, AudioClipInfo> soundsDictionary = new Dictionary<SoundId, AudioClipInfo>();
@@ -48,7 +49,7 @@ public class SoundManager : MonoBehaviour {
                 {
                     context.audioSource.volume -= context.fadeSpeed * Time.deltaTime;
                 }
-                if (!context.audioSource.isPlaying)
+                if (!isPlaying(context))
                 {
                     soundsToStop.Add(context);
                 }
@@ -67,7 +68,7 @@ public class SoundManager : MonoBehaviour {
     /// Randomly choses one of the given audio clips and plays it.
     /// </summary>
     /// <param name="soundsIds"></param>
-    public PlayingAudioClipContext PlayNewRandom(SoundId[] soundsIds)
+    public PlayingAudioClipContext PlayRandom(SoundId[] soundsIds)
     {
         int index = Random.Range(0, soundsIds.Length);
         return PlayNew(soundsIds[index]);
@@ -124,7 +125,12 @@ public class SoundManager : MonoBehaviour {
         return context;
     }
 
-    public void FadeOut(SoundId soundId, float speed)
+    public PlayingAudioClipContext FadeIn(SoundId soundId)
+    {
+        return FadeIn(soundId, defaultFadeSpeed);
+    }
+
+    public PlayingAudioClipContext FadeOut(SoundId soundId, float speed)
     {
         PlayingAudioClipContext context = GetCurrentPlayingSound(soundId);
         if (context != null)
@@ -132,6 +138,12 @@ public class SoundManager : MonoBehaviour {
             context.playbackType = PlayingAudioClipContext.PlaybackType.FADE_OUT;
             context.fadeSpeed = speed;
         }
+        return context;
+    }
+
+    public PlayingAudioClipContext FadeOut(SoundId soundId)
+    {
+        return FadeOut(soundId, defaultFadeSpeed);
     }
 
     /// <summary>
@@ -189,5 +201,16 @@ public class SoundManager : MonoBehaviour {
         audioSource.clip = audioClipInfo.audioClip;
         audioSource.volume = globalSfxVolume * audioClipInfo.volume;
         audioSource.loop = false;
+    }
+
+    public bool isPlaying(SoundId soundId)
+    {
+        PlayingAudioClipContext context = GetCurrentPlayingSound(soundId);
+        return context != null && isPlaying(context);
+    }
+
+    private bool isPlaying(PlayingAudioClipContext context)
+    {
+        return context.audioSource.isPlaying || context.audioSource.time > 0;
     }
 }

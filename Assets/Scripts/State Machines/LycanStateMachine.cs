@@ -35,6 +35,7 @@ public class LycanStateMachine : MonoBehaviour {
     private StateMachine<LycanStates> fsm;
     private float nextSpawnTimeInterval;
     private bool visibleByCamera;
+    private bool loopingSfx;
 
     private float timer;
 
@@ -50,11 +51,17 @@ public class LycanStateMachine : MonoBehaviour {
 
     void Inactive_Enter()
     {
+        StopLoopSfx();
         lycan.SetActive(false);
     }
 
     void WaitingForRespawn_Enter()
     {
+        if (SoundManager.Instance != null)
+        {
+            StopLoopSfx();
+            SoundManager.Instance.FadeIn(SoundId.FOREST_AMBIENT);
+        }
         timer = 0;
         lycan.SetActive(false);
         visibleByCamera = false;
@@ -108,9 +115,32 @@ public class LycanStateMachine : MonoBehaviour {
 
     void WaitingForFirstContact_Enter()
     {
-        // Play Sfx
+        SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT);
+        SoundManager.Instance.Play(SoundId.HOWL);
         lycan.SetActive(true);
         timer = 0;
+        loopingSfx = false;
+    }
+
+    private void PlayLoopSfx()
+    {
+        if (!loopingSfx && !SoundManager.Instance.isPlaying(SoundId.HOWL))
+        {
+            PlayingAudioClipContext heartbeatSfxContext = SoundManager.Instance.StopAndPlay(SoundId.HEART_BEAT);
+            heartbeatSfxContext.audioSource.loop = true;
+            PlayingAudioClipContext wolfSfxContext = SoundManager.Instance.StopAndPlay(SoundId.WOLF_AMBIENT);
+            wolfSfxContext.audioSource.loop = true;
+            PlayingAudioClipContext growlSfxContext = SoundManager.Instance.StopAndPlay(SoundId.GROWL);
+            growlSfxContext.audioSource.loop = true;
+            loopingSfx = true;
+        }
+    }
+    
+    private void StopLoopSfx()
+    {
+        SoundManager.Instance.FadeOut(SoundId.HEART_BEAT);
+        SoundManager.Instance.FadeOut(SoundId.WOLF_AMBIENT);
+        SoundManager.Instance.FadeOut(SoundId.GROWL);
     }
 
     void WaitingForFirstContact_Update()
@@ -133,6 +163,7 @@ public class LycanStateMachine : MonoBehaviour {
             CheckIfTimerHasRunOut(timeToFindLycan);
         }
         CheckIfPlayerIsTooClose(visibleByCamera);
+        PlayLoopSfx();
     }
 
     void StaringContestWithPlayer_Enter()
@@ -156,6 +187,7 @@ public class LycanStateMachine : MonoBehaviour {
             CheckIfTimerHasRunOut(timeToReadjustSight);
         }
         CheckIfPlayerIsTooClose(visibleByCamera);
+        PlayLoopSfx();
     }
 
     void GameOverSequenceStarted_Enter()
@@ -201,7 +233,7 @@ public class LycanStateMachine : MonoBehaviour {
 
     private bool CheckForDespawn(bool visibleByCamera, bool cursorOnLycan)
     {
-        bool oldVisibleByCamera = visibleByCamera;
+        bool oldVisibleByCamera = this.visibleByCamera;
         this.visibleByCamera = visibleByCamera;
         // If lycan was visible before but its now hidden, it has a % of dissapearing
         if (oldVisibleByCamera && !visibleByCamera && cursorOnLycan)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SafeArea : MonoBehaviour {
+public class Monument : MonoBehaviour {
 
     public float sfxFadeInSpeed = 1;
     public float sfxFadeOutSpeed = 1;
