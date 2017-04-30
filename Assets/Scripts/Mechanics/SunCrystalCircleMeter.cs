@@ -19,6 +19,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     public Range successRangeCircleI;
     public Range successRangeCircleII;
     public Range successRangeCircleIII;
+    public Animator animator;
     [Range(1,3)]
     public int initialCircleState = 1;
     public float indicatorInitialScale = 0.1f;
@@ -41,6 +42,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     // used to know if the circle needs to change color
     private bool activated;
     // activation fade variables
+    private Color initialColor; // color to go back to when failed
     private Color activationColor;
     private float currentColorFadeTime;
     private float remainingTimeColor;
@@ -65,6 +67,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
         indicatorRectangleTransform = indicator.GetComponent<RectTransform>();
         indicatorImage = indicator.GetComponent<Image>();
         currentCircleImage = outerCircleI.GetComponent<Image>();
+        initialColor = currentCircleImage.color;
         SetCircleState(initialCircleState);
     }
 	
@@ -95,7 +98,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             traversedTime = 0.0f;
             currentTime = 0.0f;
             currentColorFadeTime = 0.0f;
-            currentCircleImage.color = Color.white;
+            currentCircleImage.color = initialColor;//Color.white;
             currentIndicatorFadeTime = 0;
             remainingIndicatorFadingTime = 0;
             activated = false;
@@ -123,7 +126,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
         // color on the circle
         if (activated)
         {
-            currentCircleImage.color = Color.Lerp(activationColor, Color.white, currentColorFadeTime / remainingTimeColor);
+            currentCircleImage.color = Color.Lerp(activationColor, initialColor/*Color.white*/, currentColorFadeTime / remainingTimeColor);
             currentColorFadeTime += Time.deltaTime;
         }
     }
@@ -198,6 +201,8 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             lit = true;
             intensityFrom = minimumLightIntensity;
             intensityTo = maximumLightIntensity;
+            // trigger success
+            animator.SetTrigger("Success");
         }else
         {
             currentCircleImage.color = onFailureColor;
