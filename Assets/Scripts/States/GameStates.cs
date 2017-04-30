@@ -4,5 +4,7 @@ using UnityEngine;
 
 public enum GameStates {
 
-    Running
+    Running,
+    GameOverSequence,
+    GameOverScreen
 }

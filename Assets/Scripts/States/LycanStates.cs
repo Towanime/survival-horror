@@ -9,5 +9,6 @@ public enum LycanStates {
     CalculatingSpawnPosition,
     WaitingForFirstContact,
     StaringContestWithPlayer,
-    GameOver
+    GameOverSequenceStarted,
+    GameOverSequenceEnded
 }

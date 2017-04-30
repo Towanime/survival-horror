@@ -22,6 +22,11 @@ public class PlayerStateMachine : MonoBehaviour {
         characterController = player.GetComponent<CharacterController>();
     }
 
+    void Inactive_Enter()
+    {
+        movementStateMachine.ChangeState(MovementStates.Disabled);
+    }
+
     void Default_Enter()
     {
         movementStateMachine.ChangeState(MovementStates.Default);
