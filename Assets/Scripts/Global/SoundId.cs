@@ -4,5 +4,11 @@ using UnityEngine;
 
 public enum SoundId {
 
-	FOREST_AMBIENT
+	FOREST_AMBIENT,
+    CRYSTAL_CHIME,
+    GROWL,
+    HEART_BEAT,
+    WOLF_AMBIENT,
+    HOWL,
+    TEMPLE_AMBIENT
 }
