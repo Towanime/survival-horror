@@ -10,14 +10,29 @@ public class MovementStateMachine : MonoBehaviour {
 
     private StateMachine<MovementStates> fsm;
 
+    void Default_Enter()
+    {
+        firstPersonController.enabled = true;
+    }
+
     void Default_Update()
     {
         firstPersonController.SetInput(playerInput.direction.x, playerInput.direction.z, playerInput.crouching);
     }
 
-    void InputDisabled_Update()
+    void MovementDisabled_Enter()
+    {
+        firstPersonController.enabled = true;
+    }
+
+    void MovementDisabled_Update()
     {
         firstPersonController.SetInput(0, 0, false);
+    }
+
+    void Disabled_Enter()
+    {
+        firstPersonController.enabled = false;
     }
 
     public StateMachine<MovementStates> StateMachine
