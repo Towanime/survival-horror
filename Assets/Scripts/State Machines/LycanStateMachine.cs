@@ -21,7 +21,8 @@ public class LycanStateMachine : MonoBehaviour {
     [Range(0, 1)]
     public float chanceToDespawn = 0.05f;
     public int spawnTries = 3;
-    private float speed = 50;
+    public float runningSpeed = 30;
+    public bool gameOverEnabled = false;
 
     public LayerMask obstacleIgnoreLayer;
     public LayerMask lycanContactAreaLayer;
@@ -165,7 +166,7 @@ public class LycanStateMachine : MonoBehaviour {
     void GameOverSequenceStarted_Update()
     {
         Vector3 destination = player.transform.position;
-        Vector3 newPosition = Vector3.MoveTowards(lycan.transform.position, destination, speed * Time.deltaTime);
+        Vector3 newPosition = Vector3.MoveTowards(lycan.transform.position, destination, runningSpeed * Time.deltaTime);
         lycan.transform.position = newPosition;
         if (Vector3.Distance(newPosition, destination) == 0)
         {
@@ -180,7 +181,7 @@ public class LycanStateMachine : MonoBehaviour {
 
     private void CheckIfTimerHasRunOut(float maxTime)
     {
-        if (timer >= maxTime)
+        if (timer >= maxTime && gameOverEnabled)
         {
             fsm.ChangeState(LycanStates.GameOverSequenceStarted);
         }
@@ -192,7 +193,7 @@ public class LycanStateMachine : MonoBehaviour {
         Vector3 playerPosition = Vector3.Scale(player.transform.position, noY);
         Vector3 lycanPosition = Vector3.Scale(lycan.transform.position, noY);
         float distance = Vector3.Distance(playerPosition, lycanPosition);
-        if (visibleByCamera && distance <= distanceFromPlayerForGameOver)
+        if (visibleByCamera && distance <= distanceFromPlayerForGameOver && gameOverEnabled)
         {
             fsm.ChangeState(LycanStates.GameOverSequenceStarted);
         }

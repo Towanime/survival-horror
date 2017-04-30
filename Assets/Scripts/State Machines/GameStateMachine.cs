@@ -9,13 +9,17 @@ public class GameStateMachine : MonoBehaviour {
     public LycanStateMachine lycanStateMachine;
     public PlayerStateMachine playerStateMachine;
     public GameObject lycan;
-    public float cameraSpeed = 300;
+    public AnimationCurve cameraRotationAnimationCurve;
+    public float timeToRotateToLycan = 0.5f;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
     private Fog fog;
     private Camera playerCamera;
     private bool playerIsInSafeArea;
+    private Quaternion initialRotation;
+    private Quaternion destinationRotation;
+    private float timeWhenGameOverSequenceStarted;
 
     private StateMachine<GameStates> fsm;
 
@@ -46,13 +50,15 @@ public class GameStateMachine : MonoBehaviour {
     {
         decoyManager.Active = false;
         playerStateMachine.FSM.ChangeState(PlayerStates.Inactive);
+        initialRotation = playerCamera.transform.rotation;
+        destinationRotation = Quaternion.LookRotation(lycan.transform.position - playerCamera.transform.position);
+        timeWhenGameOverSequenceStarted = Time.time;
     }
 
     void GameOverSequence_FixedUpdate()
     {
-        Quaternion currentRotation = playerCamera.transform.rotation;
-        Quaternion destinationRotation = Quaternion.LookRotation(lycan.transform.position - playerCamera.transform.position);
-        Quaternion newRotation = Quaternion.RotateTowards(currentRotation, destinationRotation, cameraSpeed * Time.fixedDeltaTime);
+        float time = (Time.time - timeWhenGameOverSequenceStarted) / timeToRotateToLycan;
+        Quaternion newRotation = Quaternion.Slerp(initialRotation, destinationRotation, cameraRotationAnimationCurve.Evaluate(time));
         playerCamera.transform.rotation = newRotation;
     }
 
