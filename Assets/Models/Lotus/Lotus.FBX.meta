@@ -1,0 +1,438 @@
+fileFormatVersion: 2
+guid: 47a2ebd17cc377945a9bb779556fd740
+timeCreated: 1493425577
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Center
+    100002: //RootNode
+    100004: Object005
+    100006: Object006
+    100008: Object007
+    100010: Object008
+    100012: Object009
+    100014: Object010
+    100016: Object011
+    100018: Object012
+    100020: Object013
+    100022: Object014
+    100024: Object015
+    100026: Object016
+    100028: Pyramid001
+    100030: Pyramid002
+    100032: Pyramid003
+    100034: Pyramid004
+    100036: Pyramid005
+    100038: Pyramid006
+    100040: Pyramid007
+    100042: Pyramid008
+    100044: Sphere010
+    100046: Sphere011
+    100048: Yellow
+    400000: Center
+    400002: //RootNode
+    400004: Object005
+    400006: Object006
+    400008: Object007
+    400010: Object008
+    400012: Object009
+    400014: Object010
+    400016: Object011
+    400018: Object012
+    400020: Object013
+    400022: Object014
+    400024: Object015
+    400026: Object016
+    400028: Pyramid001
+    400030: Pyramid002
+    400032: Pyramid003
+    400034: Pyramid004
+    400036: Pyramid005
+    400038: Pyramid006
+    400040: Pyramid007
+    400042: Pyramid008
+    400044: Sphere010
+    400046: Sphere011
+    400048: Yellow
+    2300000: Center
+    2300002: Object005
+    2300004: Object006
+    2300006: Object007
+    2300008: Object008
+    2300010: Object009
+    2300012: Object010
+    2300014: Object011
+    2300016: Object012
+    2300018: Object013
+    2300020: Object014
+    2300022: Object015
+    2300024: Object016
+    2300026: Pyramid001
+    2300028: Pyramid002
+    2300030: Pyramid003
+    2300032: Pyramid004
+    2300034: Pyramid005
+    2300036: Pyramid006
+    2300038: Pyramid007
+    2300040: Pyramid008
+    2300042: Sphere010
+    2300044: Sphere011
+    2300046: Yellow
+    3300000: Center
+    3300002: Object005
+    3300004: Object006
+    3300006: Object007
+    3300008: Object008
+    3300010: Object009
+    3300012: Object010
+    3300014: Object011
+    3300016: Object012
+    3300018: Object013
+    3300020: Object014
+    3300022: Object015
+    3300024: Object016
+    3300026: Pyramid001
+    3300028: Pyramid002
+    3300030: Pyramid003
+    3300032: Pyramid004
+    3300034: Pyramid005
+    3300036: Pyramid006
+    3300038: Pyramid007
+    3300040: Pyramid008
+    3300042: Sphere010
+    3300044: Sphere011
+    3300046: Yellow
+    4300000: Center
+    4300002: Sphere010
+    4300004: Sphere011
+    4300006: Yellow
+    4300008: Object005
+    4300010: Object006
+    4300012: Object007
+    4300014: Object008
+    4300016: Object009
+    4300018: Object010
+    4300020: Object011
+    4300022: Object012
+    4300024: Object013
+    4300026: Object014
+    4300028: Object015
+    4300030: Object016
+    4300032: Pyramid001
+    4300034: Pyramid002
+    4300036: Pyramid003
+    4300038: Pyramid004
+    4300040: Pyramid005
+    4300042: Pyramid006
+    4300044: Pyramid007
+    4300046: Pyramid008
+    7400000: Unfold
+    7400002: SuccessLight
+    7400004: Idle
+    9500000: //RootNode
+    11100000: //RootNode
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Unfold
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 300
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Center
+        weight: 1
+      - path: Object005
+        weight: 1
+      - path: Object006
+        weight: 1
+      - path: Object007
+        weight: 1
+      - path: Object008
+        weight: 1
+      - path: Object009
+        weight: 1
+      - path: Object010
+        weight: 1
+      - path: Object011
+        weight: 1
+      - path: Object012
+        weight: 1
+      - path: Object013
+        weight: 1
+      - path: Object014
+        weight: 1
+      - path: Object015
+        weight: 1
+      - path: Object016
+        weight: 1
+      - path: Pyramid001
+        weight: 1
+      - path: Pyramid002
+        weight: 1
+      - path: Pyramid003
+        weight: 1
+      - path: Pyramid004
+        weight: 1
+      - path: Pyramid005
+        weight: 1
+      - path: Pyramid006
+        weight: 1
+      - path: Pyramid007
+        weight: 1
+      - path: Pyramid008
+        weight: 1
+      - path: Sphere010
+        weight: 1
+      - path: Sphere011
+        weight: 1
+      - path: Yellow
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: SuccessLight
+      takeName: Take 001
+      firstFrame: 301
+      lastFrame: 350
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Center
+        weight: 1
+      - path: Object005
+        weight: 1
+      - path: Object006
+        weight: 1
+      - path: Object007
+        weight: 1
+      - path: Object008
+        weight: 1
+      - path: Object009
+        weight: 1
+      - path: Object010
+        weight: 1
+      - path: Object011
+        weight: 1
+      - path: Object012
+        weight: 1
+      - path: Object013
+        weight: 1
+      - path: Object014
+        weight: 1
+      - path: Object015
+        weight: 1
+      - path: Object016
+        weight: 1
+      - path: Pyramid001
+        weight: 1
+      - path: Pyramid002
+        weight: 1
+      - path: Pyramid003
+        weight: 1
+      - path: Pyramid004
+        weight: 1
+      - path: Pyramid005
+        weight: 1
+      - path: Pyramid006
+        weight: 1
+      - path: Pyramid007
+        weight: 1
+      - path: Pyramid008
+        weight: 1
+      - path: Sphere010
+        weight: 1
+      - path: Sphere011
+        weight: 1
+      - path: Yellow
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle
+      takeName: Take 001
+      firstFrame: 351
+      lastFrame: 600
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Center
+        weight: 1
+      - path: Object005
+        weight: 1
+      - path: Object006
+        weight: 1
+      - path: Object007
+        weight: 1
+      - path: Object008
+        weight: 1
+      - path: Object009
+        weight: 1
+      - path: Object010
+        weight: 1
+      - path: Object011
+        weight: 1
+      - path: Object012
+        weight: 1
+      - path: Object013
+        weight: 1
+      - path: Object014
+        weight: 1
+      - path: Object015
+        weight: 1
+      - path: Object016
+        weight: 1
+      - path: Pyramid001
+        weight: 1
+      - path: Pyramid002
+        weight: 1
+      - path: Pyramid003
+        weight: 1
+      - path: Pyramid004
+        weight: 1
+      - path: Pyramid005
+        weight: 1
+      - path: Pyramid006
+        weight: 1
+      - path: Pyramid007
+        weight: 1
+      - path: Pyramid008
+        weight: 1
+      - path: Sphere010
+        weight: 1
+      - path: Sphere011
+        weight: 1
+      - path: Yellow
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
