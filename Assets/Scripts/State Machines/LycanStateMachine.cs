@@ -15,6 +15,7 @@ public class LycanStateMachine : MonoBehaviour {
     public float maxTimeBetweenSpawns = 30;
     public float minSpawnDistanceFromPlayer = 25;
     public float maxSpawnDistanceFromPlayer = 30;
+    public float maxDistanceFromPlayer = 30;
     public float distanceFromPlayerForGameOver = 10;
     public float timeToFindLycan = 3;
     public float timeToReadjustSight = 1;
@@ -23,6 +24,7 @@ public class LycanStateMachine : MonoBehaviour {
     public int spawnTries = 3;
     public float runningSpeed = 30;
     public bool gameOverEnabled = false;
+    public bool followPlayer = true;
 
     public LayerMask obstacleIgnoreLayer;
     public LayerMask lycanContactAreaLayer;
@@ -143,6 +145,23 @@ public class LycanStateMachine : MonoBehaviour {
         SoundManager.Instance.FadeOut(SoundId.GROWL);
     }
 
+    private void UpdateLycanPosition()
+    {
+        if (followPlayer)
+        {
+            Vector3 noY = new Vector3(1, 0, 1);
+            Vector3 playerPosition = Vector3.Scale(player.transform.position, noY);
+            Vector3 lycanPosition = Vector3.Scale(lycan.transform.position, noY);
+            float distance = Vector3.Distance(playerPosition, lycanPosition);
+            if (distance > maxDistanceFromPlayer)
+            {
+                Vector3 translation = lycanPosition - playerPosition;
+                translation = Vector3.ClampMagnitude(translation, distance - maxDistanceFromPlayer);
+                lycan.transform.Translate(translation);
+            }
+        }
+    }
+
     void WaitingForFirstContact_Update()
     {
         bool visibleByCamera = IsVisibleByCamera();
@@ -164,6 +183,7 @@ public class LycanStateMachine : MonoBehaviour {
         }
         CheckIfPlayerIsTooClose(visibleByCamera);
         PlayLoopSfx();
+        UpdateLycanPosition();
     }
 
     void StaringContestWithPlayer_Enter()
@@ -188,6 +208,7 @@ public class LycanStateMachine : MonoBehaviour {
         }
         CheckIfPlayerIsTooClose(visibleByCamera);
         PlayLoopSfx();
+        UpdateLycanPosition();
     }
 
     void GameOverSequenceStarted_Enter()
