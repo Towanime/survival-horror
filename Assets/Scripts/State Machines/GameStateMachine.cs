@@ -20,16 +20,22 @@ public class GameStateMachine : MonoBehaviour {
     private Quaternion initialRotation;
     private Quaternion destinationRotation;
     private float timeWhenGameOverSequenceStarted;
-
+    private bool initialized;
     private StateMachine<GameStates> fsm;
 
     void Awake()
+    {
+        if (!initialized) Init();
+    }
+
+    void Init()
     {
         player = GameObject.FindGameObjectWithTag("Player");
         fog = player.GetComponentInChildren<Fog>();
         playerCamera = player.GetComponentInChildren<Camera>();
         sunCrystalCircleMeter = player.GetComponentInChildren<SunCrystalCircleMeter>();
         fsm = StateMachine<GameStates>.Initialize(this, GameStates.Running);
+        initialized = true;
     }
 
     void Running_Enter()

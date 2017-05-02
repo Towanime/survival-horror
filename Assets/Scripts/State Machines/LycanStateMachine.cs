@@ -39,13 +39,19 @@ public class LycanStateMachine : MonoBehaviour {
     private bool visibleByCamera;
     private bool loopingSfx;
     private float lycanY;
-
+    private bool initialized;
     private float timer;
 
     void Awake()
     {
+        if (!initialized) Init();
+    }
+
+    void Init()
+    {
         fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
         lycanY = lycan.transform.position.y;
+        initialized = true;
     }
 
     void Update()
@@ -320,6 +326,13 @@ public class LycanStateMachine : MonoBehaviour {
 
     public StateMachine<LycanStates> FSM
     {
-        get { return fsm; }
+        get
+        {
+            if (!initialized)
+            {
+                Init();
+            }
+            return fsm;
+        }
     }
 }

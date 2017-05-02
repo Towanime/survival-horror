@@ -15,11 +15,19 @@ public class PlayerStateMachine : MonoBehaviour {
     private StateMachine<MovementStates> movementStateMachine;
     private CharacterController characterController;
 
+    private bool initialized;
+
     void Awake()
+    {
+        if (!initialized) Init();
+    }
+
+    void Init()
     {
         movementStateMachine = GetComponent<MovementStateMachine>().StateMachine;
         fsm = StateMachine<PlayerStates>.Initialize(this, startingState);
         characterController = player.GetComponent<CharacterController>();
+        initialized = true;
     }
 
     void Inactive_Enter()
@@ -43,6 +51,11 @@ public class PlayerStateMachine : MonoBehaviour {
 
     public StateMachine<PlayerStates> FSM
     {
-        get { return fsm; }
+        get {
+            if (!initialized)
+            {
+                Init();
+            }
+            return fsm; }
     }
 }
