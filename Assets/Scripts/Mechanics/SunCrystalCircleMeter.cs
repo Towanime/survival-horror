@@ -20,6 +20,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     public Range successRangeCircleII;
     public Range successRangeCircleIII;
     public Animator animator;
+    public GameObject lycan;
     [Range(1,3)]
     public int initialCircleState = 1;
     public float indicatorInitialScale = 0.1f;
@@ -28,6 +29,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     public Color onSuccessColor = Color.green;
     public Color onFailureColor = Color.red;
     public Light crystalLight;
+    public Color lycanSuccessLight;
     public float crystalFadingTime = 0.2f;
     public float minimumLightIntensity = 0f;
     public float maximumLightIntensity = 5f;
@@ -57,6 +59,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     private bool fadingLight;
     private float currentLightTime;
     private float traversedTimeLight;
+    private Color originColorLight;
     // temporal light range
     private float intensityFrom;
     private float intensityTo;
@@ -69,6 +72,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
         currentCircleImage = outerCircleI.GetComponent<Image>();
         initialColor = currentCircleImage.color;
         SetCircleState(initialCircleState);
+        originColorLight = crystalLight.color;
     }
 	
 	// Update is called once per frame
@@ -201,6 +205,9 @@ public class SunCrystalCircleMeter : MonoBehaviour {
             lit = true;
             intensityFrom = minimumLightIntensity;
             intensityTo = maximumLightIntensity;
+            // is the lycan showing?
+            crystalLight.color = lycan.activeInHierarchy ? lycanSuccessLight : originColorLight;
+            Debug.Log("Active color: " + crystalLight.color);
             // trigger success
             animator.SetTrigger("Success");
             SoundManager.Instance.Play(SoundId.CRYSTAL_CHIME);
