@@ -41,6 +41,8 @@ public class LycanStateMachine : MonoBehaviour {
     private float lycanY;
     private bool initialized;
     private float timer;
+    private Animator lycanAnimator;
+    private float animationDuration = 0.66f / 0.8f;
 
     void Awake()
     {
@@ -50,6 +52,7 @@ public class LycanStateMachine : MonoBehaviour {
     void Init()
     {
         fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
+        lycanAnimator = lycan.GetComponentInChildren<Animator>();
         lycanY = lycan.transform.position.y;
         initialized = true;
     }
@@ -222,17 +225,39 @@ public class LycanStateMachine : MonoBehaviour {
         UpdateLycanPosition();
     }
 
+    Vector3 initialPosition;
+    Quaternion initialRotation;
+    float startingTime;
+    float distanceFromPlayer = 11f;
+    float finalPositionY = 4.5f;
+    float finalRotationX = 65f;
+    Vector3 destinationPosition;
+    Quaternion destinationRotation;
+
     void GameOverSequenceStarted_Enter()
     {
+        Vector3 cameraCenter = playerCamera.transform.position;
+        lycan.transform.LookAt(cameraCenter);
+        lycanAnimator.SetTrigger("Attack");
+        lycanAnimator.GetComponent<LookAtPlayer>().enabled = false;
         GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceStarted");
+        startingTime = Time.time;
+        initialPosition = lycan.transform.position;
+        destinationPosition = cameraCenter + Vector3.ClampMagnitude(initialPosition - cameraCenter, distanceFromPlayer);
+        destinationPosition.y = finalPositionY;
+
+        initialRotation = lycan.transform.rotation;
+
+
+        destinationRotation = Quaternion.Euler(finalRotationX, initialRotation.eulerAngles.y + 1.2f, initialRotation.eulerAngles.z);
     }
 
-    void GameOverSequenceStarted_Update()
+    void GameOverSequenceStarted_FixedUpdate()
     {
-        Vector3 destination = player.transform.position;
-        Vector3 newPosition = Vector3.MoveTowards(lycan.transform.position, destination, runningSpeed * Time.deltaTime);
+        lycan.transform.rotation = Quaternion.Lerp(initialRotation, destinationRotation, (Time.time - startingTime) / animationDuration);
+        Vector3 newPosition = Vector3.Lerp(initialPosition, destinationPosition, (Time.time - startingTime) / animationDuration);
         lycan.transform.position = newPosition;
-        if (Vector3.Distance(newPosition, destination) == 0)
+        if (Vector3.Distance(newPosition, destinationPosition) == 0)
         {
             fsm.ChangeState(LycanStates.GameOverSequenceEnded);
         }
@@ -240,7 +265,7 @@ public class LycanStateMachine : MonoBehaviour {
 
     void GameOverSequenceEnded_Enter()
     {
-        GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceEnded");
+        
     }
 
     private void CheckIfTimerHasRunOut(float maxTime)
