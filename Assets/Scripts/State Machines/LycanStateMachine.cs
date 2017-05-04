@@ -38,12 +38,20 @@ public class LycanStateMachine : MonoBehaviour {
     private float nextSpawnTimeInterval;
     private bool visibleByCamera;
     private bool loopingSfx;
-
+    private float lycanY;
+    private bool initialized;
     private float timer;
 
     void Awake()
     {
+        if (!initialized) Init();
+    }
+
+    void Init()
+    {
         fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
+        lycanY = lycan.transform.position.y;
+        initialized = true;
     }
 
     void Update()
@@ -86,9 +94,12 @@ public class LycanStateMachine : MonoBehaviour {
         {
             Vector3 spawnPosition = CalculateSpawnPosition();
             Vector3 direction = spawnPosition - cameraPosition;
-            bool hit = Physics.Raycast(cameraPosition, direction, direction.magnitude);
+            // Debug.DrawRay(cameraPosition, direction);
+            RaycastHit hitInfo;
+            bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
             if (!hit)
             {
+                spawnPosition.y = lycanY;
                 lycan.transform.position = spawnPosition;
                 fsm.ChangeState(LycanStates.WaitingForFirstContact);
                 break;
@@ -155,9 +166,9 @@ public class LycanStateMachine : MonoBehaviour {
             float distance = Vector3.Distance(playerPosition, lycanPosition);
             if (distance > maxDistanceFromPlayer)
             {
-                Vector3 translation = lycanPosition - playerPosition;
+                Vector3 translation = playerPosition - lycanPosition;
                 translation = Vector3.ClampMagnitude(translation, distance - maxDistanceFromPlayer);
-                lycan.transform.Translate(translation);
+                lycan.transform.Translate(translation, Space.World);
             }
         }
     }
@@ -315,6 +326,13 @@ public class LycanStateMachine : MonoBehaviour {
 
     public StateMachine<LycanStates> FSM
     {
-        get { return fsm; }
+        get
+        {
+            if (!initialized)
+            {
+                Init();
+            }
+            return fsm;
+        }
     }
 }
