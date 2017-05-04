@@ -65,10 +65,19 @@ public class GameStateMachine : MonoBehaviour {
 
     void GameOverSequence_FixedUpdate()
     {
-        destinationRotation = Quaternion.LookRotation(focusPoint.transform.position - playerCamera.transform.position);
         float time = (Time.time - timeWhenGameOverSequenceStarted) / timeToRotateToLycan;
-        Quaternion newRotation = Quaternion.Slerp(initialRotation, destinationRotation, cameraRotationAnimationCurve.Evaluate(time));
+        Quaternion newRotation = Quaternion.Slerp(initialRotation, GetDestinationRotation(), cameraRotationAnimationCurve.Evaluate(time));
         playerCamera.transform.rotation = newRotation;
+    }
+
+    void GameOverScreen_Enter()
+    {
+        playerCamera.transform.rotation = GetDestinationRotation();
+    }
+
+    private Quaternion GetDestinationRotation()
+    {
+        return Quaternion.LookRotation(focusPoint.transform.position - playerCamera.transform.position);
     }
 
     void GameOverScreen_Update()
