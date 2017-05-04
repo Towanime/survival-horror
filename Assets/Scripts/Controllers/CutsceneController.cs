@@ -44,6 +44,9 @@ public class CutsceneController : MonoBehaviour {
 		}
 
 		BlackFadeOut();
+
+        // Check white fade
+        UpdateFadeTimeline();
 	}
 
 	void BlackFadeOut() {
@@ -65,8 +68,18 @@ public class CutsceneController : MonoBehaviour {
 		}
 	}
 
-	public void WhiteFadeInOut() {
+	public void WhiteFadeInOut()
+    {
+        // this is only called once so use it to initialize the fade
+        // change color to white but also no alpha
+        Color whiteNoAlpha = Color.white;
+        whiteNoAlpha.a = 0;
+        fadeImage.color = whiteNoAlpha;
+        currentTime = 0;
+        // start the fade chain
+        fadeInActiveWhite = true;
 
+        /*
 		fadeImage.color = Color.white;
 
 		if (fadeColor.a == 0 && cutsceneActive == true) {
@@ -96,10 +109,69 @@ public class CutsceneController : MonoBehaviour {
 				fadeOutActiveWhite = false;
 				currentTime = 0;
 			}
-		}
-	}
+		}*/
+    }
 
-	void LotusBloom() {
+    private void UpdateFadeTimeline()
+    {
+        // check fade in!
+        if (cutsceneActive == true && fadeInActiveWhite == true)
+        {
+            // begin or continue fading until it's done
+            fadeInActiveWhite = FadeAlpha(0, 1, 2); // alpha 0 to 1 (completely opaque)
+            // fadeInActiveWhite it will go false when the fade is complete, breaking out of this if forevah*
+            // if it is false then it can begin the fade out
+            if (fadeInActiveWhite == false) // extra points if you get this #yu-gi-oh chain effect
+            {
+                fadeOutActiveWhite = true; // starts next item in the chain
+            }
+        }
+
+        // check fade out
+        if (cutsceneActive == true && fadeOutActiveWhite == true)
+        {
+            // begin or continue fading until it's done
+            fadeOutActiveWhite = FadeAlpha(1, 0, 1); // alpha 1 to 0
+            // fadeOutActiveWhite it will go false when the fade is complete
+            // if it is false then it can begin the next step ???
+            if (fadeOutActiveWhite == false) // extra points if you get this #yu-gi-oh chain effect
+            {
+                // fadeInActiveBlack true here?
+            }
+        }
+    }
+
+    /// <summary>
+    /// Fades alpha between the provided values at a specific rate (in seconds).
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <param name="time"></param>
+    /// <returns>It will return false when the fading is complete.</returns>
+    public bool FadeAlpha(float from, float to, float time)
+    {
+        // how much time has passed?
+        float traversedTime = currentTime / time;
+        // get color value
+        fadeColor = fadeImage.color;
+        // lerp alpha
+        fadeColor.a = Mathf.Lerp(from, to, traversedTime);
+        currentTime += Time.deltaTime;
+        fadeImage.color = fadeColor;
+
+        // 1 means the lerp is complete
+        if (traversedTime >= 1)
+        {
+            currentTime = 0;
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    void LotusBloom() {
 		sunLotus.GetComponent<Animator> ().speed = 1;
 		sunLotus.GetComponent<Animator> ().Play ("Unfold");
 	}
