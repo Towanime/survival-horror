@@ -11,6 +11,7 @@ public class LycanStateMachine : MonoBehaviour {
     public Camera playerCamera;
     public GameObject player;
     public GameObject lycan;
+    public GameObject eyesContainer;
     public float minTimeBetweenSpawns = 20;
     public float maxTimeBetweenSpawns = 30;
     public float minSpawnDistanceFromPlayer = 25;
@@ -41,6 +42,19 @@ public class LycanStateMachine : MonoBehaviour {
     private float lycanY;
     private bool initialized;
     private float timer;
+    private Animator lycanAnimator;
+
+    public float animationDuration = 0.825f;
+    public float animationDistanceFromPlayer = 11f;
+    public float animationPositionYOffset = 3.5f;
+    public float animationRotationX = 65f;
+    public float animationRotationYOffset = 1.2f;
+
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
+    private float timeWhenGameOverSequenceStarted;
+    private Vector3 destinationPosition;
+    private Quaternion destinationRotation;
 
     void Awake()
     {
@@ -49,8 +63,9 @@ public class LycanStateMachine : MonoBehaviour {
 
     void Init()
     {
-        fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
+        lycanAnimator = lycan.GetComponentInChildren<Animator>();
         lycanY = lycan.transform.position.y;
+        fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
         initialized = true;
     }
 
@@ -73,8 +88,11 @@ public class LycanStateMachine : MonoBehaviour {
             SoundManager.Instance.FadeIn(SoundId.FOREST_AMBIENT);
         }
         timer = 0;
-        lycan.SetActive(false);
         visibleByCamera = false;
+        lycan.SetActive(false);
+        lycan.GetComponent<LookAtPlayer>().enabled = true;
+        lycanAnimator.SetBool("Attacking", false);
+        eyesContainer.SetActive(true);
         nextSpawnTimeInterval = Random.Range(minTimeBetweenSpawns, maxTimeBetweenSpawns);
     }
 
@@ -224,15 +242,28 @@ public class LycanStateMachine : MonoBehaviour {
 
     void GameOverSequenceStarted_Enter()
     {
+        Vector3 cameraPosition = playerCamera.transform.position;
+        initialPosition = lycan.transform.position;
+        Vector3 distanceAwayFromPlayer = Vector3.ClampMagnitude(initialPosition - cameraPosition, animationDistanceFromPlayer);
+        destinationPosition = cameraPosition + distanceAwayFromPlayer;
+        destinationPosition.y = player.transform.position.y + animationPositionYOffset;
+
+        initialRotation = lycan.transform.rotation;
+        destinationRotation = Quaternion.Euler(animationRotationX, initialRotation.eulerAngles.y + animationRotationYOffset, initialRotation.eulerAngles.z);
+
+        lycan.GetComponent<LookAtPlayer>().enabled = false;
+        lycanAnimator.SetBool("Attacking", true);
+        timeWhenGameOverSequenceStarted = Time.time;
+        eyesContainer.SetActive(false);
         GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceStarted");
     }
 
-    void GameOverSequenceStarted_Update()
+    void GameOverSequenceStarted_FixedUpdate()
     {
-        Vector3 destination = player.transform.position;
-        Vector3 newPosition = Vector3.MoveTowards(lycan.transform.position, destination, runningSpeed * Time.deltaTime);
-        lycan.transform.position = newPosition;
-        if (Vector3.Distance(newPosition, destination) == 0)
+        float t = (Time.time - timeWhenGameOverSequenceStarted) / animationDuration;
+        lycan.transform.rotation = Quaternion.Lerp(initialRotation, destinationRotation, t);
+        lycan.transform.position = Vector3.Lerp(initialPosition, destinationPosition, t);
+        if (t >= 1)
         {
             fsm.ChangeState(LycanStates.GameOverSequenceEnded);
         }
@@ -240,7 +271,7 @@ public class LycanStateMachine : MonoBehaviour {
 
     void GameOverSequenceEnded_Enter()
     {
-        GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceEnded");
+        
     }
 
     private void CheckIfTimerHasRunOut(float maxTime)
