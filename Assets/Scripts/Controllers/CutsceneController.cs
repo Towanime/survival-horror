@@ -10,21 +10,39 @@ public class CutsceneController : MonoBehaviour {
 	public bool fadeOutActiveBlack;
 	public bool fadeInActiveWhite;
 	public bool fadeOutActiveWhite;
+	public bool cameraPanStick;
 
 	public Color fadeColor;
 	public float fadeTime;
 	private float currentTime;
-
 	public Image fadeImage;
+
 	public GameObject cutsceneCam;
 	public GameObject cameraPos1;
 	public GameObject cameraPos2;
+	public GameObject cameraPos3;
+	public GameObject camera3Pan;
 	public GameObject playerController;
 	public GameObject sunLotusParticles;
 	public GameObject pedestalParticles;
+	public GameObject safeZoneParticles;
 	public GameObject sunLotus;
 	public GameObject fadeOverlay;
+	public GameObject monumentTop;
+	public GameObject monumentSpike1;
+	public GameObject monumentSpike2;
+	public GameObject monumentSpike3;
+	public GameObject monumentSpike4;
+	public GameObject monumentSpike5;
+	public GameObject monumentSpike6;
+	public GameObject monumentPillar;
+	public GameObject monumentDarkPillar;
+
 	public Light monumentLight;
+
+	public Material shinyTop;
+	public Material shinySpike;
+	public Material shinyPillar;
 
 
 	// Use this for initialization
@@ -47,6 +65,12 @@ public class CutsceneController : MonoBehaviour {
 
         // Check white fade
         UpdateFadeTimeline();
+
+		if (cameraPanStick == true) {
+			camera3Pan.SetActive (true);
+			cutsceneCam.transform.position = cameraPos3.transform.position;
+			cutsceneCam.transform.rotation = cameraPos3.transform.rotation;
+		}
 	}
 
 	void BlackFadeOut() {
@@ -78,38 +102,6 @@ public class CutsceneController : MonoBehaviour {
         currentTime = 0;
         // start the fade chain
         fadeInActiveWhite = true;
-
-        /*
-		fadeImage.color = Color.white;
-
-		if (fadeColor.a == 0 && cutsceneActive == true) {
-			fadeInActiveWhite = true;
-		}
-
-		if (fadeInActiveWhite == true) {
-			fadeColor = fadeImage.color;
-			fadeColor.a = Mathf.Lerp (0, 1, currentTime / (fadeTime - currentTime));
-			currentTime += Time.deltaTime;
-			fadeImage.color = fadeColor;
-
-			if (fadeColor.a >= 100) {
-				fadeInActiveWhite = false;
-				fadeOutActiveWhite = true;
-				currentTime = 0;
-			}
-		}
-
-		if (fadeOutActiveWhite == true) {
-			fadeColor = fadeImage.color;
-			fadeColor.a = Mathf.Lerp (1, 0, currentTime / (fadeTime - currentTime));
-			currentTime += Time.deltaTime;
-			fadeImage.color = fadeColor;
-
-			if (fadeColor.a <= 0) {
-				fadeOutActiveWhite = false;
-				currentTime = 0;
-			}
-		}*/
     }
 
     private void UpdateFadeTimeline()
@@ -118,7 +110,7 @@ public class CutsceneController : MonoBehaviour {
         if (cutsceneActive == true && fadeInActiveWhite == true)
         {
             // begin or continue fading until it's done
-            fadeInActiveWhite = FadeAlpha(0, 1, 2); // alpha 0 to 1 (completely opaque)
+            fadeInActiveWhite = FadeAlpha(0, 1, 0.2f); // alpha 0 to 1 (completely opaque)
             // fadeInActiveWhite it will go false when the fade is complete, breaking out of this if forevah*
             // if it is false then it can begin the fade out
             if (fadeInActiveWhite == false) // extra points if you get this #yu-gi-oh chain effect
@@ -130,13 +122,16 @@ public class CutsceneController : MonoBehaviour {
         // check fade out
         if (cutsceneActive == true && fadeOutActiveWhite == true)
         {
+			safeZoneParticles.SetActive (true);
+			cameraPanStick = true;
+			MonumentColorShift ();
             // begin or continue fading until it's done
-            fadeOutActiveWhite = FadeAlpha(1, 0, 1); // alpha 1 to 0
+            fadeOutActiveWhite = FadeAlpha(1, 0, 5f); // alpha 1 to 0
             // fadeOutActiveWhite it will go false when the fade is complete
             // if it is false then it can begin the next step ???
-            if (fadeOutActiveWhite == false) // extra points if you get this #yu-gi-oh chain effect
+			if (fadeOutActiveWhite == false && camera3Pan.GetComponent<Transform>().rotation.x <= -20) // extra points if you get this #yu-gi-oh chain effect
             {
-                // fadeInActiveBlack true here?
+				// fadeInActiveBlack true here?
             }
         }
     }
@@ -170,6 +165,19 @@ public class CutsceneController : MonoBehaviour {
             return true;
         }
     }
+
+	void MonumentColorShift() {
+		monumentTop.GetComponent<Renderer> ().material = shinyTop;
+		monumentSpike1.GetComponent<Renderer> ().material = shinySpike;
+		monumentSpike2.GetComponent<Renderer> ().material = shinySpike;
+		monumentSpike3.GetComponent<Renderer> ().material = shinySpike;
+		monumentSpike4.GetComponent<Renderer> ().material = shinySpike;
+		monumentSpike5.GetComponent<Renderer> ().material = shinySpike;
+		monumentSpike6.GetComponent<Renderer> ().material = shinySpike;
+		monumentPillar.GetComponent<Renderer> ().material = shinyPillar;
+		monumentDarkPillar.SetActive (false);
+
+	}
 
     void LotusBloom() {
 		sunLotus.GetComponent<Animator> ().speed = 1;
