@@ -8,7 +8,6 @@ public class GameStateMachine : MonoBehaviour {
     public DecoyManager decoyManager;
     public LycanStateMachine lycanStateMachine;
     public PlayerStateMachine playerStateMachine;
-    public GameObject lycan;
     public GameObject focusPoint;
     public AnimationCurve cameraRotationAnimationCurve;
     public float timeToRotateToLycan = 0.5f;
@@ -44,6 +43,9 @@ public class GameStateMachine : MonoBehaviour {
         playerStateMachine.FSM.ChangeState(PlayerStates.Default);
         if (playerIsInSafeArea)
         {
+            lycanStateMachine.FSM.ChangeState(LycanStates.Inactive);
+        } else
+        {
             lycanStateMachine.FSM.ChangeState(LycanStates.WaitingForRespawn);
         }
     }
@@ -67,13 +69,14 @@ public class GameStateMachine : MonoBehaviour {
         float time = (Time.time - timeWhenGameOverSequenceStarted) / timeToRotateToLycan;
         Quaternion newRotation = Quaternion.Slerp(initialRotation, destinationRotation, cameraRotationAnimationCurve.Evaluate(time));
         playerCamera.transform.rotation = newRotation;
-
-        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * 10, Color.red);
     }
 
-    void GameOverScreen_Enter()
+    void GameOverScreen_Update()
     {
-        //lycanStateMachine.FSM.ChangeState(LycanStates.Inactive);
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            fsm.ChangeState(GameStates.Running);
+        }
     }
 
     void OnPlayerEnterSafeArea()
@@ -97,6 +100,6 @@ public class GameStateMachine : MonoBehaviour {
 
     void OnGameOverSequenceEnded()
     {
-        //fsm.ChangeState(GameStates.GameOverScreen);
+        fsm.ChangeState(GameStates.GameOverScreen);
     }
 }
