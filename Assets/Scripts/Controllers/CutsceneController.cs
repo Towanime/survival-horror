@@ -44,12 +44,16 @@ public class CutsceneController : MonoBehaviour {
 	public Material shinySpike;
 	public Material shinyPillar;
 
+	public AudioClip pedestalChime;
+	public AudioClip monumentTune;
+	public AudioSource cutsceneAudio;
     // temporal so first fadeout doesn't fuck stuff, to fix later with the action trigger
     private bool first;
 
 
 	// Use this for initialization
 	void Start () {
+		cutsceneAudio = GetComponent<AudioSource>();
 		sunLotus.GetComponent<Animator> ().speed = 0;
 	}
 	
@@ -102,6 +106,8 @@ public class CutsceneController : MonoBehaviour {
             if (fadeOutActiveBlack == false) 
             {
                 LotusBloom();
+				cutsceneAudio.clip = pedestalChime;
+				cutsceneAudio.Play();
             }
         }
 
@@ -109,12 +115,14 @@ public class CutsceneController : MonoBehaviour {
         if (cutsceneActive == true && fadeInActiveWhite == true)
         {
             // begin or continue fading until it's done
-            fadeInActiveWhite = FadeAlpha(0, 1, 0.2f); // alpha 0 to 1 (completely opaque)
+            fadeInActiveWhite = FadeAlpha(0, 1, 0.5f); // alpha 0 to 1 (completely opaque)
             // fadeInActiveWhite it will go false when the fade is complete, breaking out of this if forevah*
             // if it is false then it can begin the fade out
             if (fadeInActiveWhite == false) // extra points if you get this #yu-gi-oh chain effect
             {
-                fadeOutActiveWhite = true; // starts next item in the chain
+                fadeOutActiveWhite = true;
+				cutsceneAudio.clip = monumentTune;
+				cutsceneAudio.Play();// starts next item in the chain
             }
         }
 
@@ -124,8 +132,9 @@ public class CutsceneController : MonoBehaviour {
 			safeZoneParticles.SetActive (true);
 			cameraPanStick = true;
 			MonumentColorShift ();
+
             // begin or continue fading until it's done
-            fadeOutActiveWhite = FadeAlpha(1, 0, 5f); // alpha 1 to 0
+            fadeOutActiveWhite = FadeAlpha(1, 0, 4f); // alpha 1 to 0
             // fadeOutActiveWhite it will go false when the fade is complete
             // if it is false then it can begin the next step ???
 			if (fadeOutActiveWhite == false)
@@ -141,15 +150,17 @@ public class CutsceneController : MonoBehaviour {
 
         // black fade in
         //Debug.Log("Camera rotation: " + camera3Pan.transform.eulerAngles.x);
-        if (cutsceneActive == true && fadeInActiveBlack == true && camera3Pan.transform.eulerAngles.x >= 348)
+        if (cutsceneActive == true && fadeInActiveBlack == true && camera3Pan.transform.eulerAngles.x >= 346)
         {
             // begin or continue fading until it's done
-            fadeInActiveBlack = FadeAlpha(0, 1, 1f); // alpha 0 to 1 (completely opaque)
+            fadeInActiveBlack = FadeAlpha(0, 1, 3f); // alpha 0 to 1 (completely opaque)
                                                         // fadeInActiveWhite it will go false when the fade is complete, breaking out of this if forevah*
                                                         // if it is false then it can begin the fade out
             if (fadeInActiveBlack == false)
             {
-                // something else here? if not then remove this if
+				cutsceneCam.SetActive (false);
+				playerController.SetActive(true);
+				sunLotus.SetActive (false);
             }                
         }
     }
