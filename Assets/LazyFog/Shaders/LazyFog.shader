@@ -15,6 +15,12 @@ SubShader {
 	    Tags {"Queue"="Transparent+101" "IgnoreProjector"="True" "RenderType"="Transparent"}
         LOD 400
 
+		Stencil {
+			Ref 0
+			Comp Equal
+			Pass Keep
+		}
+
 
 		Lighting On
         Cull Off
