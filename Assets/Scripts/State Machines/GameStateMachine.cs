@@ -10,7 +10,11 @@ public class GameStateMachine : MonoBehaviour {
     public PlayerStateMachine playerStateMachine;
     public GameObject focusPoint;
     public AnimationCurve cameraRotationAnimationCurve;
+    public Camera uiCamera;
     public float timeToRotateToLycan = 0.5f;
+    public CanvasGroup foregroundCanvasGroup;
+    private float timeBeforeFadeInGameOverScreen = 0.5f;
+    private float timeToFadeInGameOverScreen = 0.5f;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
@@ -19,7 +23,7 @@ public class GameStateMachine : MonoBehaviour {
     private bool playerIsInSafeArea;
     private Quaternion initialRotation;
     private Quaternion destinationRotation;
-    private float timeWhenGameOverSequenceStarted;
+    private float timeStateChanged;
     private bool initialized;
     private StateMachine<GameStates> fsm;
 
@@ -40,6 +44,8 @@ public class GameStateMachine : MonoBehaviour {
 
     void Running_Enter()
     {
+        playerCamera.gameObject.SetActive(true);
+        uiCamera.enabled = false;
         playerStateMachine.FSM.ChangeState(PlayerStates.Default);
         if (playerIsInSafeArea)
         {
@@ -60,32 +66,38 @@ public class GameStateMachine : MonoBehaviour {
         decoyManager.Active = false;
         playerStateMachine.FSM.ChangeState(PlayerStates.Inactive);
         initialRotation = playerCamera.transform.rotation;
-        timeWhenGameOverSequenceStarted = Time.time;
+        timeStateChanged = Time.time;
     }
 
     void GameOverSequence_FixedUpdate()
     {
-        float time = (Time.time - timeWhenGameOverSequenceStarted) / timeToRotateToLycan;
+        float time = (Time.time - timeStateChanged) / timeToRotateToLycan;
         Quaternion newRotation = Quaternion.Slerp(initialRotation, GetDestinationRotation(), cameraRotationAnimationCurve.Evaluate(time));
         playerCamera.transform.rotation = newRotation;
     }
 
-    void GameOverScreen_Enter()
+    IEnumerator GameOverScreen_Enter()
     {
         playerCamera.transform.rotation = GetDestinationRotation();
+        playerCamera.gameObject.SetActive(false);
+        uiCamera.enabled = true;
+        yield return new WaitForSeconds(timeBeforeFadeInGameOverScreen);
+        timeStateChanged = Time.time;
+    }
+
+    void GameOverScreen_Update()
+    {
+        float alpha = Mathf.Min(1, (Time.time - timeStateChanged) / timeToFadeInGameOverScreen);
+        foregroundCanvasGroup.alpha = 1 - alpha;
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            fsm.ChangeState(GameStates.Running);
+        }
     }
 
     private Quaternion GetDestinationRotation()
     {
         return Quaternion.LookRotation(focusPoint.transform.position - playerCamera.transform.position);
-    }
-
-    void GameOverScreen_Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            fsm.ChangeState(GameStates.Running);
-        }
     }
 
     void OnPlayerEnterSafeArea()
