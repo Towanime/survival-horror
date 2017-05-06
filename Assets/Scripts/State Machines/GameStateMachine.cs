@@ -78,6 +78,7 @@ public class GameStateMachine : MonoBehaviour {
 
     IEnumerator GameOverScreen_Enter()
     {
+        foregroundCanvasGroup.alpha = 1;
         playerCamera.transform.rotation = GetDestinationRotation();
         playerCamera.gameObject.SetActive(false);
         uiCamera.enabled = true;
