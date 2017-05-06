@@ -16,6 +16,7 @@ public class SoundManager : MonoBehaviour {
     private Dictionary<SoundId, AudioClipInfo> soundsDictionary = new Dictionary<SoundId, AudioClipInfo>();
     private Dictionary<SoundId, List<PlayingAudioClipContext>> soundsBeingPlayed = new Dictionary<SoundId, List<PlayingAudioClipContext>>();
     private List<PlayingAudioClipContext> soundsToStop = new List<PlayingAudioClipContext>();
+    private Queue<PlayingAudioClipContext> wrapperPool = new Queue<PlayingAudioClipContext>();
     private static SoundManager instance;
 
     protected SoundManager()
@@ -60,6 +61,7 @@ public class SoundManager : MonoBehaviour {
         {
             AudioSourceContainerPool.instance.ReleaseObject(context.audioSourceContainer);
             soundsBeingPlayed[context.audioClipInfo.id].Remove(context);
+            wrapperPool.Enqueue(context);
         }
         soundsToStop.Clear();
     }
@@ -89,11 +91,20 @@ public class SoundManager : MonoBehaviour {
         SetInitialValues(audioSource, audioClipInfo);
         audioSource.Play();
 
-        PlayingAudioClipContext context = new PlayingAudioClipContext();
+        PlayingAudioClipContext context;
+        if (wrapperPool.Count > 0)
+        {
+            context = wrapperPool.Dequeue();
+        } else
+        {
+            context = new PlayingAudioClipContext();
+        }
         context.audioSource = audioSource;
         context.audioClipInfo = audioClipInfo;
         context.audioSourceContainer = poolObject;
         context.playbackType = PlayingAudioClipContext.PlaybackType.REGULAR;
+        context.fadeSpeed = defaultFadeSpeed;
+        context.stopAtNoVolume = false;
         // Keep reference to the objects to return them later to the pool
         soundsBeingPlayed[soundId].Add(context);
         return context;

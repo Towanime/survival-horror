@@ -26,7 +26,7 @@ public class LycanStateMachine : MonoBehaviour {
     public float runningSpeed = 30;
     public bool gameOverEnabled = false;
     public bool followPlayer = true;
-    public float randomSfxChance = 0.0015f;
+    public Vector2 randomSfxTimeRange = new Vector2(5f, 25f);
     public SoundId[] randomSfx = new SoundId[] { SoundId.OWL, SoundId.BRANCHES, SoundId.GROAN };
 
     public LayerMask obstacleIgnoreLayer;
@@ -58,6 +58,8 @@ public class LycanStateMachine : MonoBehaviour {
     private Vector3 destinationPosition;
     private Quaternion destinationRotation;
     private int lastRandomSfxPlayedIndex = -1;
+    private float currentRandomSfxTime;
+    private float lastMomentRandomSfxPlayed;
 
     void Awake()
     {
@@ -98,6 +100,13 @@ public class LycanStateMachine : MonoBehaviour {
         lycanAnimator.SetBool("Attacking", false);
         eyesContainer.SetActive(true);
         nextSpawnTimeInterval = Random.Range(minTimeBetweenSpawns, maxTimeBetweenSpawns);
+        lastMomentRandomSfxPlayed = Time.time;
+        CalculateRandomSfxTime();
+    }
+
+    private void CalculateRandomSfxTime()
+    {
+        currentRandomSfxTime = Random.Range(randomSfxTimeRange.x, randomSfxTimeRange.y);
     }
 
     void WaitingForRespawn_Update()
@@ -107,7 +116,7 @@ public class LycanStateMachine : MonoBehaviour {
         {
             fsm.ChangeState(LycanStates.CalculatingSpawnPosition);
         }
-        if (!isRandomSfxPlaying() && Random.Range(0f, 1f) <= randomSfxChance)
+        if (!isRandomSfxPlaying() && (Time.time - lastMomentRandomSfxPlayed) >= currentRandomSfxTime)
         {
             PlayRandomSfx();
         }
@@ -122,6 +131,8 @@ public class LycanStateMachine : MonoBehaviour {
         }
         lastRandomSfxPlayedIndex = index;
         SoundManager.Instance.Play(randomSfx[index]);
+        lastMomentRandomSfxPlayed = Time.time;
+        CalculateRandomSfxTime();
     }
 
     bool isRandomSfxPlaying()
