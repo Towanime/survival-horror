@@ -26,7 +26,7 @@ public class LycanStateMachine : MonoBehaviour {
     public float runningSpeed = 30;
     public bool gameOverEnabled = false;
     public bool followPlayer = true;
-    public Vector2 randomSfxTimeRange = new Vector2(5f, 25f);
+    public Vector2 randomSfxTimeRange = new Vector2(5f, 15f);
     public SoundId[] randomSfx = new SoundId[] { SoundId.OWL, SoundId.BRANCHES, SoundId.GROAN };
 
     public LayerMask obstacleIgnoreLayer;
