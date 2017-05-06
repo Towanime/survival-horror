@@ -12,9 +12,10 @@ public class GameStateMachine : MonoBehaviour {
     public AnimationCurve cameraRotationAnimationCurve;
     public Camera uiCamera;
     public float timeToRotateToLycan = 0.5f;
+    public GameObject gameOverScreenCanvas;
     public CanvasGroup foregroundCanvasGroup;
-    private float timeBeforeFadeInGameOverScreen = 0.5f;
-    private float timeToFadeInGameOverScreen = 0.5f;
+    public float timeBeforeFadeInGameOverScreen = 0.5f;
+    public float timeToFadeInGameOverScreen = 0.5f;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
@@ -46,6 +47,7 @@ public class GameStateMachine : MonoBehaviour {
     {
         playerCamera.gameObject.SetActive(true);
         uiCamera.enabled = false;
+        gameOverScreenCanvas.SetActive(false);
         playerStateMachine.FSM.ChangeState(PlayerStates.Default);
         if (playerIsInSafeArea)
         {
@@ -78,6 +80,7 @@ public class GameStateMachine : MonoBehaviour {
 
     IEnumerator GameOverScreen_Enter()
     {
+        gameOverScreenCanvas.SetActive(true);
         foregroundCanvasGroup.alpha = 1;
         playerCamera.transform.rotation = GetDestinationRotation();
         playerCamera.gameObject.SetActive(false);
