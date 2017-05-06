@@ -26,6 +26,8 @@ public class LycanStateMachine : MonoBehaviour {
     public float runningSpeed = 30;
     public bool gameOverEnabled = false;
     public bool followPlayer = true;
+    public float randomSfxChance = 0.0015f;
+    public SoundId[] randomSfx = new SoundId[] { SoundId.OWL, SoundId.BRANCHES, SoundId.GROAN };
 
     public LayerMask obstacleIgnoreLayer;
     public LayerMask lycanContactAreaLayer;
@@ -55,6 +57,7 @@ public class LycanStateMachine : MonoBehaviour {
     private float timeWhenGameOverSequenceStarted;
     private Vector3 destinationPosition;
     private Quaternion destinationRotation;
+    private int lastRandomSfxPlayedIndex = -1;
 
     void Awake()
     {
@@ -78,6 +81,7 @@ public class LycanStateMachine : MonoBehaviour {
     {
         StopLoopSfx();
         lycan.SetActive(false);
+        SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT, true);
     }
 
     void WaitingForRespawn_Enter()
@@ -85,7 +89,7 @@ public class LycanStateMachine : MonoBehaviour {
         if (SoundManager.Instance != null)
         {
             StopLoopSfx();
-            SoundManager.Instance.FadeIn(SoundId.FOREST_AMBIENT);
+            SoundManager.Instance.FadeIn(SoundId.FOREST_AMBIENT).Loop();
         }
         timer = 0;
         visibleByCamera = false;
@@ -103,6 +107,33 @@ public class LycanStateMachine : MonoBehaviour {
         {
             fsm.ChangeState(LycanStates.CalculatingSpawnPosition);
         }
+        if (!isRandomSfxPlaying() && Random.Range(0f, 1f) <= randomSfxChance)
+        {
+            PlayRandomSfx();
+        }
+    }
+
+    void PlayRandomSfx()
+    {
+        int index = Random.Range(0, randomSfx.Length);
+        while (index == lastRandomSfxPlayedIndex && randomSfx.Length > 1)
+        {
+            index = Random.Range(0, randomSfx.Length);
+        }
+        lastRandomSfxPlayedIndex = index;
+        SoundManager.Instance.Play(randomSfx[index]);
+    }
+
+    bool isRandomSfxPlaying()
+    {
+        for (int i = 0; i < randomSfx.Length; i++)
+        {
+            if (SoundManager.Instance.isPlaying(randomSfx[i]))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     void CalculatingSpawnPosition_Update()
@@ -146,8 +177,9 @@ public class LycanStateMachine : MonoBehaviour {
 
     void WaitingForFirstContact_Enter()
     {
-        SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT);
+        SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT, true);
         SoundManager.Instance.Play(SoundId.HOWL);
+        StopRandomSfx();
         lycan.SetActive(true);
         timer = 0;
         loopingSfx = false;
@@ -157,21 +189,26 @@ public class LycanStateMachine : MonoBehaviour {
     {
         if (!loopingSfx && !SoundManager.Instance.isPlaying(SoundId.HOWL))
         {
-            PlayingAudioClipContext heartbeatSfxContext = SoundManager.Instance.StopAndPlay(SoundId.HEART_BEAT);
-            heartbeatSfxContext.audioSource.loop = true;
-            PlayingAudioClipContext wolfSfxContext = SoundManager.Instance.StopAndPlay(SoundId.WOLF_AMBIENT);
-            wolfSfxContext.audioSource.loop = true;
-            PlayingAudioClipContext growlSfxContext = SoundManager.Instance.StopAndPlay(SoundId.GROWL);
-            growlSfxContext.audioSource.loop = true;
+            SoundManager.Instance.Play(SoundId.HEART_BEAT).Loop();
+            SoundManager.Instance.Play(SoundId.WOLF_AMBIENT).Loop();
+            SoundManager.Instance.Play(SoundId.GROWL).Loop();
             loopingSfx = true;
         }
     }
     
     private void StopLoopSfx()
     {
-        SoundManager.Instance.FadeOut(SoundId.HEART_BEAT);
-        SoundManager.Instance.FadeOut(SoundId.WOLF_AMBIENT);
-        SoundManager.Instance.FadeOut(SoundId.GROWL);
+        SoundManager.Instance.FadeOut(SoundId.HEART_BEAT, true);
+        SoundManager.Instance.FadeOut(SoundId.WOLF_AMBIENT, true);
+        SoundManager.Instance.FadeOut(SoundId.GROWL, true);
+    }
+
+    private void StopRandomSfx()
+    {
+        for (int i = 0; i < randomSfx.Length; i++)
+        {
+            SoundManager.Instance.FadeOut(randomSfx[i], true);
+        }
     }
 
     private void UpdateLycanPosition()
@@ -256,6 +293,8 @@ public class LycanStateMachine : MonoBehaviour {
         timeWhenGameOverSequenceStarted = Time.time;
         eyesContainer.SetActive(false);
         GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnGameOverSequenceStarted");
+        StopLoopSfx();
+        SoundManager.Instance.Play(SoundId.JUMP_GRUNT);
     }
 
     void GameOverSequenceStarted_FixedUpdate()

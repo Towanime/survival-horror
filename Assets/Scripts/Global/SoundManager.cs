@@ -49,7 +49,7 @@ public class SoundManager : MonoBehaviour {
                 {
                     context.audioSource.volume -= context.fadeSpeed * Time.deltaTime;
                 }
-                if (!isPlaying(context))
+                if (!isPlaying(context) || (context.stopAtNoVolume && context.audioSource.volume == 0))
                 {
                     soundsToStop.Add(context);
                 }
@@ -71,7 +71,7 @@ public class SoundManager : MonoBehaviour {
     public PlayingAudioClipContext PlayRandom(SoundId[] soundsIds)
     {
         int index = Random.Range(0, soundsIds.Length);
-        return PlayNew(soundsIds[index]);
+        return Play(soundsIds[index]);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class SoundManager : MonoBehaviour {
         PlayingAudioClipContext context = GetCurrentPlayingSound(soundId);
         if (context == null)
         {
-            context = PlayNew(soundId);
+            context = Play(soundId);
         }
         context.playbackType = PlayingAudioClipContext.PlaybackType.FADE_IN;
         context.fadeSpeed = speed;
@@ -130,20 +130,31 @@ public class SoundManager : MonoBehaviour {
         return FadeIn(soundId, defaultFadeSpeed);
     }
 
-    public PlayingAudioClipContext FadeOut(SoundId soundId, float speed)
+    public PlayingAudioClipContext FadeOut(SoundId soundId, float speed, bool stopAfterFadeOut)
     {
         PlayingAudioClipContext context = GetCurrentPlayingSound(soundId);
         if (context != null)
         {
             context.playbackType = PlayingAudioClipContext.PlaybackType.FADE_OUT;
             context.fadeSpeed = speed;
+            context.stopAtNoVolume = stopAfterFadeOut;
         }
         return context;
     }
 
     public PlayingAudioClipContext FadeOut(SoundId soundId)
     {
-        return FadeOut(soundId, defaultFadeSpeed);
+        return FadeOut(soundId, defaultFadeSpeed, false);
+    }
+
+    public PlayingAudioClipContext FadeOut(SoundId soundId, float speed)
+    {
+        return FadeOut(soundId, speed, false);
+    }
+
+    public PlayingAudioClipContext FadeOut(SoundId soundId, bool stopAfterFadeOut)
+    {
+        return FadeOut(soundId, defaultFadeSpeed, stopAfterFadeOut);
     }
 
     /// <summary>

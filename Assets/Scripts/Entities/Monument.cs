@@ -9,13 +9,11 @@ public class Monument : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT, sfxFadeOutSpeed);
         GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnPlayerEnterSafeArea");
     }
 
     void OnTriggerExit(Collider other)
     {
-        SoundManager.Instance.FadeIn(SoundId.FOREST_AMBIENT, sfxFadeInSpeed);
         GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnPlayerExitSafeArea");
     }
 }

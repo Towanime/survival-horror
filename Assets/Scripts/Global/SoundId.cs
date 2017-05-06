@@ -10,5 +10,10 @@ public enum SoundId {
     HEART_BEAT,
     WOLF_AMBIENT,
     HOWL,
-    TEMPLE_AMBIENT
+    TEMPLE_AMBIENT,
+    JUMP_GRUNT,
+    OWL,
+    BRANCHES,
+    GROAN,
+    GAME_OVER
 }

@@ -26,9 +26,10 @@ public class GameStateMachine : MonoBehaviour {
     private Quaternion destinationRotation;
     private float timeStateChanged;
     private bool initialized;
+    private bool playingGameOverSfx;
     private StateMachine<GameStates> fsm;
 
-    void Awake()
+    void Start()
     {
         if (!initialized) Init();
     }
@@ -45,6 +46,8 @@ public class GameStateMachine : MonoBehaviour {
 
     void Running_Enter()
     {
+        playingGameOverSfx = false;
+        SoundManager.Instance.FadeOut(SoundId.GAME_OVER, true);
         playerCamera.gameObject.SetActive(true);
         uiCamera.enabled = false;
         gameOverScreenCanvas.SetActive(false);
@@ -91,8 +94,13 @@ public class GameStateMachine : MonoBehaviour {
 
     void GameOverScreen_Update()
     {
-        float alpha = Mathf.Min(1, (Time.time - timeStateChanged) / timeToFadeInGameOverScreen);
-        foregroundCanvasGroup.alpha = 1 - alpha;
+        float alpha = 1 - Mathf.Min(1, (Time.time - timeStateChanged) / timeToFadeInGameOverScreen);
+        foregroundCanvasGroup.alpha = alpha;
+        if (alpha <= 0 && !playingGameOverSfx)
+        {
+            SoundManager.Instance.FadeIn(SoundId.GAME_OVER);
+            playingGameOverSfx = true;
+        }
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             fsm.ChangeState(GameStates.Running);

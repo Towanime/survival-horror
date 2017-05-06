@@ -17,4 +17,11 @@ public class PlayingAudioClipContext {
     public AudioSource audioSource;
     public PlaybackType playbackType = PlaybackType.REGULAR;
     public float fadeSpeed;
+    public bool stopAtNoVolume;
+
+    public PlayingAudioClipContext Loop()
+    {
+        audioSource.loop = true;
+        return this;
+    }
 }
