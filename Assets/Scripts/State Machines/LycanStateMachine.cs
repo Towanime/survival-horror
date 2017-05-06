@@ -269,11 +269,6 @@ public class LycanStateMachine : MonoBehaviour {
         }
     }
 
-    void GameOverSequenceEnded_Enter()
-    {
-        
-    }
-
     private void CheckIfTimerHasRunOut(float maxTime)
     {
         if (timer >= maxTime && gameOverEnabled)
