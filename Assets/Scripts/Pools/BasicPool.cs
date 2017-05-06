@@ -10,8 +10,14 @@ public class BasicPool : MonoBehaviour
     public bool dynamicSize = true;
     // list to hold references
     private List<GameObject> pool;
+    private bool initialized = false;
 
     void Start()
+    {
+        if (!initialized) Init();
+    }
+
+    void Init()
     {
         pool = new List<GameObject>();
         for (int i = 0; i < poolSize; i++)
@@ -25,6 +31,7 @@ public class BasicPool : MonoBehaviour
     // get available object
     public GameObject GetObject()
     {
+        if (!initialized) Init();
         for (int i = 0; i < pool.Count; i++)
         {
             if (!pool[i].activeInHierarchy)

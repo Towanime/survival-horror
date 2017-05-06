@@ -49,7 +49,7 @@ public class GameStateMachine : MonoBehaviour {
         playingGameOverSfx = false;
         SoundManager.Instance.FadeOut(SoundId.GAME_OVER, true);
         playerCamera.gameObject.SetActive(true);
-        uiCamera.enabled = false;
+        uiCamera.gameObject.SetActive(false);
         gameOverScreenCanvas.SetActive(false);
         playerStateMachine.FSM.ChangeState(PlayerStates.Default);
         if (playerIsInSafeArea)
@@ -87,7 +87,7 @@ public class GameStateMachine : MonoBehaviour {
         foregroundCanvasGroup.alpha = 1;
         playerCamera.transform.rotation = GetDestinationRotation();
         playerCamera.gameObject.SetActive(false);
-        uiCamera.enabled = true;
+        uiCamera.gameObject.SetActive(true);
         yield return new WaitForSeconds(timeBeforeFadeInGameOverScreen);
         timeStateChanged = Time.time;
     }
