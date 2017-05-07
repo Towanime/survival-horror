@@ -77,17 +77,24 @@ public class DecoyManager : MonoBehaviour {
 
     void CreateNewDecoys()
     {
+        Vector3 cameraPosition = playerCamera.transform.position;
         int decoysToAdd = maxNumberOfDecoys - activeDecoys.Count;
         for (int i = 0; i < decoysToAdd; i++)
         {
-            GameObject decoy = GetDecoy();
-            activeDecoys.Add(decoy);
+            Vector3 spawnPosition = CalculateSpawnPosition();
+            Vector3 direction = spawnPosition - cameraPosition;
+            RaycastHit hitInfo;
+            bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
+            if (!hit)
+            {
+                GameObject decoy = GetDecoy(spawnPosition);
+                activeDecoys.Add(decoy);
+            }
         }
     }
 
-    GameObject GetDecoy()
+    GameObject GetDecoy(Vector3 spawnPosition)
     {
-        Vector3 spawnPosition = CalculateSpawnPosition();
         GameObject decoy = DecoyPool.instance.GetObject();
         decoy.transform.position = spawnPosition;
         Renderer renderer = decoy.GetComponentInChildren<Renderer>();
@@ -114,7 +121,9 @@ public class DecoyManager : MonoBehaviour {
         float distance = Random.Range(minSpawnDistanceFromPlayer, maxSpawnDistanceFromPlayer);
         Vector3 newY = new Vector3(0, Random.Range(minY, maxY), 0);
         Vector3 playerPositon = Vector3.Scale(player.transform.position, noY);
-        return playerPositon + (direction * distance) + newY;
+        Vector3 spawnPosition = playerPositon + (direction * distance) + newY;
+        spawnPosition.y += Terrain.activeTerrain.SampleHeight(spawnPosition);
+        return spawnPosition;
     }
 
     void ReleaseDecoy(GameObject decoy)
