@@ -77,17 +77,24 @@ public class DecoyManager : MonoBehaviour {
 
     void CreateNewDecoys()
     {
+        Vector3 cameraPosition = playerCamera.transform.position;
         int decoysToAdd = maxNumberOfDecoys - activeDecoys.Count;
         for (int i = 0; i < decoysToAdd; i++)
         {
-            GameObject decoy = GetDecoy();
-            activeDecoys.Add(decoy);
+            Vector3 spawnPosition = CalculateSpawnPosition();
+            Vector3 direction = spawnPosition - cameraPosition;
+            RaycastHit hitInfo;
+            bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
+            if (!hit)
+            {
+                GameObject decoy = GetDecoy(spawnPosition);
+                activeDecoys.Add(decoy);
+            }
         }
     }
 
-    GameObject GetDecoy()
+    GameObject GetDecoy(Vector3 spawnPosition)
     {
-        Vector3 spawnPosition = CalculateSpawnPosition();
         GameObject decoy = DecoyPool.instance.GetObject();
         decoy.transform.position = spawnPosition;
         Renderer renderer = decoy.GetComponentInChildren<Renderer>();

@@ -26,6 +26,7 @@ public class BasicPool : MonoBehaviour
             obj.SetActive(false);
             pool.Add(obj);
         }
+        initialized = true;
     }
 
     // get available object
