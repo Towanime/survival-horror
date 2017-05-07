@@ -50,12 +50,39 @@ public class DecoyManager : MonoBehaviour {
             }
             else
             {
-                Renderer renderer = decoy.GetComponentInChildren<Renderer>();
-                Color color = renderer.material.color;
-                color.a = Mathf.Clamp(color.a + alphaSpeed * Time.deltaTime, 0, 1);
-                renderer.material.color = color;
+                FadeIn(decoy);
             }
         }
+    }
+
+    private void FadeIn(GameObject decoy)
+    {
+        Renderer[] renderers = decoy.GetComponentsInChildren<Renderer>();
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            Color color = renderer.material.color;
+            color.a = Mathf.Clamp(color.a + alphaSpeed * Time.deltaTime, 0, 1);
+            renderer.material.color = color;
+        }
+    }
+
+    private bool FadeOut(GameObject decoy)
+    {
+        Renderer[] renderers = decoy.GetComponentsInChildren<Renderer>();
+        bool noAlpha = false;
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            Color color = renderer.material.color;
+            color.a = Mathf.Clamp(color.a - alphaSpeed * Time.deltaTime, 0, 1);
+            renderer.material.color = color;
+            if (color.a == 0)
+            {
+                noAlpha = true;
+            }
+        }
+        return noAlpha;
     }
 
     void UpdateDespawningDecoys()
@@ -63,21 +90,7 @@ public class DecoyManager : MonoBehaviour {
         for (int i = despawningDecoys.Count - 1; i >= 0; i--)
         {
             GameObject decoy = despawningDecoys[i];
-
-            Renderer[] renderers = decoy.GetComponentsInChildren<Renderer>();
-            bool noAlpha = false;
-            for (int j = 0; j < renderers.Length; j++)
-            {
-                Renderer renderer = renderers[j];
-                Color color = renderer.material.color;
-                color.a = Mathf.Clamp(color.a - alphaSpeed * Time.deltaTime, 0, 1);
-                renderer.material.color = color;
-                if (color.a == 0)
-                {
-                    noAlpha = true;
-                }
-            }
-
+            bool noAlpha = FadeOut(decoy);
             if (noAlpha)
             {
                 despawningDecoys.RemoveAt(i);
