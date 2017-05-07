@@ -115,14 +115,17 @@ public class GameStateMachine : MonoBehaviour {
     {
         float alpha = 1 - Mathf.Min(1, (Time.time - timeStateChanged) / timeToFadeInGameOverScreen);
         foregroundCanvasGroup.alpha = alpha;
-        if (alpha <= 0 && !playingGameOverSfx)
+        if (alpha <= 0)
         {
-            SoundManager.Instance.FadeIn(SoundId.GAME_OVER);
-            playingGameOverSfx = true;
-        }
-        if (playerInput.action)
-        {
-            fsm.ChangeState(GameStates.Running);
+            if (!playingGameOverSfx)
+            {
+                SoundManager.Instance.FadeIn(SoundId.GAME_OVER);
+                playingGameOverSfx = true;
+            }
+            if (playerInput.action)
+            {
+                fsm.ChangeState(GameStates.Running);
+            }
         }
     }
 
