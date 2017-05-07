@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Temple : MonoBehaviour {
+public class SafeArea : MonoBehaviour {
 
-    public GameObject gameStateMachine;
-    public float templeSfxFadeSpeed = 0.25f;
+    public bool playSfx;
+    public float sfxFadeSpeed = 0.25f;
+    public SoundId sfx;
+    private GameObject gameStateMachine;
 
     void Start()
     {
@@ -14,7 +16,10 @@ public class Temple : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        SoundManager.Instance.FadeIn(SoundId.TEMPLE_AMBIENT, templeSfxFadeSpeed).Loop();
+        if (playSfx)
+        {
+            SoundManager.Instance.FadeIn(sfx, sfxFadeSpeed).Loop();
+        }
         if (gameStateMachine != null)
         {
             gameStateMachine.SendMessage("OnPlayerEnterSafeArea");
@@ -23,7 +28,10 @@ public class Temple : MonoBehaviour {
 
     void OnTriggerExit(Collider other)
     {
-        SoundManager.Instance.FadeOut(SoundId.TEMPLE_AMBIENT, templeSfxFadeSpeed, true);
+        if (playSfx)
+        {
+            SoundManager.Instance.FadeOut(sfx, sfxFadeSpeed, true);
+        }
         if (gameStateMachine != null)
         {
             gameStateMachine.SendMessage("OnPlayerExitSafeArea");

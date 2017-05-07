@@ -70,7 +70,7 @@ public class LycanStateMachine : MonoBehaviour {
     {
         lycanAnimator = lycan.GetComponentInChildren<Animator>();
         lycanY = lycan.transform.position.y;
-        fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.WaitingForRespawn);
+        fsm = StateMachine<LycanStates>.Initialize(this, LycanStates.Inactive);
         initialized = true;
     }
 
@@ -81,9 +81,13 @@ public class LycanStateMachine : MonoBehaviour {
 
     void Inactive_Enter()
     {
-        StopLoopSfx();
         lycan.SetActive(false);
-        SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT, true);
+        if (SoundManager.Instance != null)
+        {
+            StopLoopSfx();
+            SoundManager.Instance.FadeOut(SoundId.HOWL);
+            SoundManager.Instance.FadeOut(SoundId.FOREST_AMBIENT, true);
+        }
     }
 
     void WaitingForRespawn_Enter()

@@ -63,11 +63,22 @@ public class DecoyManager : MonoBehaviour {
         for (int i = despawningDecoys.Count - 1; i >= 0; i--)
         {
             GameObject decoy = despawningDecoys[i];
-            Renderer renderer = decoy.GetComponentInChildren<Renderer>();
-            Color color = renderer.material.color;
-            color.a = Mathf.Clamp(color.a - alphaSpeed * Time.deltaTime, 0, 1);
-            renderer.material.color = color;
-            if (color.a == 0)
+
+            Renderer[] renderers = decoy.GetComponentsInChildren<Renderer>();
+            bool noAlpha = false;
+            for (int j = 0; j < renderers.Length; j++)
+            {
+                Renderer renderer = renderers[j];
+                Color color = renderer.material.color;
+                color.a = Mathf.Clamp(color.a - alphaSpeed * Time.deltaTime, 0, 1);
+                renderer.material.color = color;
+                if (color.a == 0)
+                {
+                    noAlpha = true;
+                }
+            }
+
+            if (noAlpha)
             {
                 despawningDecoys.RemoveAt(i);
                 ReleaseDecoy(decoy);
