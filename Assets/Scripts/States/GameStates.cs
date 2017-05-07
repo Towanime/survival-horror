@@ -6,5 +6,6 @@ public enum GameStates {
 
     Running,
     GameOverSequence,
-    GameOverScreen
+    GameOverScreen,
+    ReadingBook
 }

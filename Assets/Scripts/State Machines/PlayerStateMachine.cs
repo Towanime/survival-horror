@@ -11,10 +11,12 @@ public class PlayerStateMachine : MonoBehaviour {
     public PlayerStates startingState = PlayerStates.Default;
     public SunCrystalCircleMeter crystalMeter;
     public ActionInView actionActivator;
+    public Animator armAnimator;
 
     private StateMachine<PlayerStates> fsm;
     private StateMachine<MovementStates> movementStateMachine;
     private CharacterController characterController;
+    private bool lotusEnabled = true;
 
     private bool initialized;
 
@@ -34,6 +36,7 @@ public class PlayerStateMachine : MonoBehaviour {
     void Inactive_Enter()
     {
         movementStateMachine.ChangeState(MovementStates.Disabled);
+        crosshair.enabled = false;
     }
 
     void Default_Enter()
@@ -48,10 +51,26 @@ public class PlayerStateMachine : MonoBehaviour {
         {
             actionActivator.Activate();
         }
-        if (playerInput.crystal)
+        if (playerInput.crystal && lotusEnabled)
         {
             crystalMeter.Activate();
         }
+    }
+
+    public void EnableLotus()
+    {
+        if (!lotusEnabled)
+        {
+            armAnimator.gameObject.SetActive(true);
+            armAnimator.SetTrigger("lotusActive");
+            lotusEnabled = true;
+        }
+    }
+
+    public void DisableLotus()
+    {
+        armAnimator.gameObject.SetActive(false);
+        lotusEnabled = false;
     }
 
     public StateMachine<PlayerStates> FSM

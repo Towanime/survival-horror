@@ -5,6 +5,7 @@ using MonsterLove.StateMachine;
 
 public class GameStateMachine : MonoBehaviour {
 
+    public PlayerInput playerInput;
     public DecoyManager decoyManager;
     public LycanStateMachine lycanStateMachine;
     public PlayerStateMachine playerStateMachine;
@@ -16,6 +17,8 @@ public class GameStateMachine : MonoBehaviour {
     public CanvasGroup foregroundCanvasGroup;
     public float timeBeforeFadeInGameOverScreen = 0.5f;
     public float timeToFadeInGameOverScreen = 0.5f;
+    public Canvas uiCanvas;
+    public Diary diary;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
@@ -42,10 +45,12 @@ public class GameStateMachine : MonoBehaviour {
         sunCrystalCircleMeter = player.GetComponentInChildren<SunCrystalCircleMeter>();
         fsm = StateMachine<GameStates>.Initialize(this, GameStates.Running);
         initialized = true;
+        playerStateMachine.DisableLotus();
     }
 
     void Running_Enter()
     {
+        uiCanvas.enabled = true;
         playingGameOverSfx = false;
         SoundManager.Instance.FadeOut(SoundId.GAME_OVER, true);
         playerCamera.gameObject.SetActive(true);
@@ -64,6 +69,20 @@ public class GameStateMachine : MonoBehaviour {
     void Running_Update()
     {
         decoyManager.Active = !playerIsInSafeArea && !sunCrystalCircleMeter.IsLit;
+    }
+
+    void ReadingBook_Enter()
+    {
+        playerStateMachine.FSM.ChangeState(PlayerStates.Inactive);
+        uiCanvas.enabled = false;
+    }
+
+    void ReadingBook_Update()
+    {
+        if (playerInput.action)
+        {
+            StartCoroutine(diary.Close());
+        }
     }
 
     void GameOverSequence_Enter()
@@ -101,7 +120,7 @@ public class GameStateMachine : MonoBehaviour {
             SoundManager.Instance.FadeIn(SoundId.GAME_OVER);
             playingGameOverSfx = true;
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (playerInput.action)
         {
             fsm.ChangeState(GameStates.Running);
         }
@@ -134,5 +153,20 @@ public class GameStateMachine : MonoBehaviour {
     void OnGameOverSequenceEnded()
     {
         fsm.ChangeState(GameStates.GameOverScreen);
+    }
+
+    void OnBookOpened()
+    {
+        fsm.ChangeState(GameStates.ReadingBook);
+    }
+
+    void OnBookClosed()
+    {
+        fsm.ChangeState(GameStates.Running);
+    }
+
+    void OnLotusPickup()
+    {
+        playerStateMachine.EnableLotus();
     }
 }
