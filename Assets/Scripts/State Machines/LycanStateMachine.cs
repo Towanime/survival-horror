@@ -159,7 +159,7 @@ public class LycanStateMachine : MonoBehaviour {
             bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
             if (!hit)
             {
-                spawnPosition.y = lycanY;
+                spawnPosition.y = lycanY + Terrain.activeTerrain.SampleHeight(spawnPosition);
                 lycan.transform.position = spawnPosition;
                 fsm.ChangeState(LycanStates.WaitingForFirstContact);
                 break;
@@ -183,7 +183,8 @@ public class LycanStateMachine : MonoBehaviour {
 
         Vector3 direction = rotation * playerForward;
         float distance = Random.Range(minSpawnDistanceFromPlayer, maxSpawnDistanceFromPlayer);
-        return player.transform.position + (direction * distance);
+        Vector3 spawnPosition = player.transform.position + (direction * distance);
+        return spawnPosition;
     }
 
     void WaitingForFirstContact_Enter()

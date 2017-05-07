@@ -114,7 +114,9 @@ public class DecoyManager : MonoBehaviour {
         float distance = Random.Range(minSpawnDistanceFromPlayer, maxSpawnDistanceFromPlayer);
         Vector3 newY = new Vector3(0, Random.Range(minY, maxY), 0);
         Vector3 playerPositon = Vector3.Scale(player.transform.position, noY);
-        return playerPositon + (direction * distance) + newY;
+        Vector3 spawnPosition = playerPositon + (direction * distance) + newY;
+        spawnPosition.y += Terrain.activeTerrain.SampleHeight(spawnPosition);
+        return spawnPosition;
     }
 
     void ReleaseDecoy(GameObject decoy)
