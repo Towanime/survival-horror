@@ -17,7 +17,7 @@ public class MovementStateMachine : MonoBehaviour {
 
     void Default_Update()
     {
-        firstPersonController.SetInput(playerInput.direction.x, playerInput.direction.z, playerInput.crouching);
+        firstPersonController.SetInput(playerInput.direction.x, playerInput.direction.z, false);
     }
 
     void MovementDisabled_Enter()

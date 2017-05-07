@@ -17,4 +17,9 @@ public class Activation : MonoBehaviour {
             activated = true;
         }
     }
+
+    public bool CanActivate()
+    {
+        return multipleActivation || !activated;
+    }
 }

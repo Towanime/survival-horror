@@ -8,7 +8,7 @@ public class ActionInView : MonoBehaviour {
     public Text lblMessage;
     private Activation target;
     private bool inSight;
-    private Camera camera;
+    public Camera playerCamera;
 
     
 
@@ -19,12 +19,12 @@ public class ActionInView : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        DetectTarget();
 	}
 
     private Ray getCameraRay()
     {
-        Transform cameraTransform = camera.transform;
+        Transform cameraTransform = playerCamera.transform;
         return new Ray(cameraTransform.position, cameraTransform.forward);
     }
 
@@ -36,7 +36,7 @@ public class ActionInView : MonoBehaviour {
             (hit.collider.gameObject.CompareTag("Activable")))
         {
             target = hit.collider.gameObject.GetComponent<Activation>();
-            if (target)
+            if (target && target.CanActivate())
             {
                 lblMessage.text = target.text;
                 inSight = true;
@@ -44,10 +44,25 @@ public class ActionInView : MonoBehaviour {
         }
         else
         {
-            lblMessage.text = "";
-            target = null;
-            inSight = false;
+            Clear();
         }
+    }
+
+    public void Activate()
+    {
+        if (target)
+        {
+            target.Activate();
+            Clear();
+        }
+        
+    }
+
+    public void Clear()
+    {
+        lblMessage.text = "";
+        target = null;
+        inSight = false;
     }
 
     public bool InSight()

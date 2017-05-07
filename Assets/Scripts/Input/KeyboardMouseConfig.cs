@@ -8,12 +8,8 @@ public class KeyboardMouseConfig : MonoBehaviour
     public KeyCode right;
     public KeyCode forward;
     public KeyCode backwards;
-    public KeyCode shoot;
-    public KeyCode crouch;
-    public KeyCode throwShield;
-    public KeyCode dash;
-    public KeyCode synergy;
-    public KeyCode reload;
+    public KeyCode crystal;
+    public KeyCode action;
     public bool invertY;
     public float mouseXSensitivity;
     public float mouseYSensitivity;
