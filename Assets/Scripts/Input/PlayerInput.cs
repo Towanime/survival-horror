@@ -14,13 +14,8 @@ public class PlayerInput : MonoBehaviour
     public Vector3 rawDirection;
     [Tooltip("Rotation from the mouse to apply on the camera.")]
     public Vector3 rotation;
-    public bool synergy;
-    public bool shot;
-    public bool shooting;
-    public bool threwShield;
-    public bool dashed;
-    public bool crouching;
-    public bool reloaded;
+    public bool action;
+    public bool crystal;
 
     void Update()
     {
@@ -70,12 +65,7 @@ public class PlayerInput : MonoBehaviour
 
     private void SetActions()
     {
-        this.synergy = Input.GetKey(this.config.synergy);
-        this.shooting = Input.GetKey(this.config.shoot);
-        this.shot = Input.GetKeyDown(this.config.shoot);
-        this.crouching = Input.GetKey(this.config.crouch);
-        this.threwShield = Input.GetKeyDown(this.config.throwShield);
-        this.dashed = Input.GetKeyDown(this.config.dash);
-        this.reloaded = Input.GetKeyDown(this.config.reload);
+        this.action = Input.GetKey(this.config.action);
+        this.crystal = Input.GetKeyDown(this.config.crystal);
     }    
 }

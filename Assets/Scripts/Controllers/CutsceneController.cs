@@ -60,20 +60,6 @@ public class CutsceneController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (cutsceneActive == true) {
-			playerController.SetActive(false);
-			cutsceneCam.SetActive (true);
-			pedestalParticles.SetActive(false);
-			monumentLight.enabled = false;
-			sunLotus.SetActive (true);
-            // temporal!
-            if (!first)
-            {
-                fadeOutActiveBlack = true;
-                first = true;
-            }
-		}
-
         // Check white fade
         UpdateFadeTimeline();
 
@@ -82,9 +68,20 @@ public class CutsceneController : MonoBehaviour {
 			cutsceneCam.transform.position = cameraPos3.transform.position;
 			cutsceneCam.transform.rotation = cameraPos3.transform.rotation;
 		}
-	}
+    }
 
-	public void WhiteFadeInOut()
+    public void ActivateCutscene()
+    {
+        cutsceneActive = true;
+        playerController.SetActive(false);
+        cutsceneCam.SetActive(true);
+        pedestalParticles.SetActive(false);
+        monumentLight.enabled = false;
+        sunLotus.SetActive(true);
+        fadeOutActiveBlack = true;
+    }
+
+    public void WhiteFadeInOut()
     {
         // this is only called once so use it to initialize the fade
         // change color to white but also no alpha

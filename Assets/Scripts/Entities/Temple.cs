@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class Temple : MonoBehaviour {
 
+    public GameObject gameStateMachine;
     public float templeSfxFadeSpeed = 0.25f;
+
+    void Start()
+    {
+        gameStateMachine = GameObject.FindGameObjectWithTag("GameStateMachine");
+    }
 
     void OnTriggerEnter(Collider other)
     {
         SoundManager.Instance.FadeIn(SoundId.TEMPLE_AMBIENT, templeSfxFadeSpeed).Loop();
-        GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnPlayerEnterSafeArea");
+        if (gameStateMachine != null)
+        {
+            gameStateMachine.SendMessage("OnPlayerEnterSafeArea");
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
         SoundManager.Instance.FadeOut(SoundId.TEMPLE_AMBIENT, templeSfxFadeSpeed, true);
-        GameObject.FindGameObjectWithTag("GameStateMachine").SendMessage("OnPlayerExitSafeArea");
+        if (gameStateMachine != null)
+        {
+            gameStateMachine.SendMessage("OnPlayerExitSafeArea");
+        }
     }
 }

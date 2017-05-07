@@ -10,6 +10,7 @@ public class PlayerStateMachine : MonoBehaviour {
     public Crosshair crosshair;
     public PlayerStates startingState = PlayerStates.Default;
     public SunCrystalCircleMeter crystalMeter;
+    public ActionInView actionActivator;
 
     private StateMachine<PlayerStates> fsm;
     private StateMachine<MovementStates> movementStateMachine;
@@ -43,7 +44,11 @@ public class PlayerStateMachine : MonoBehaviour {
 
     void Default_Update()
     {
-        if (playerInput.shot)
+        if (playerInput.action)
+        {
+            actionActivator.Activate();
+        }
+        if (playerInput.crystal)
         {
             crystalMeter.Activate();
         }
