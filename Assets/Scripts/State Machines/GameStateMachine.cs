@@ -15,6 +15,7 @@ public class GameStateMachine : MonoBehaviour {
     public float timeToRotateToLycan = 0.5f;
     public GameObject gameOverScreenCanvas;
     public CanvasGroup foregroundCanvasGroup;
+    public float timeBeforeShowingGameOverScreen = 0.05f;
     public float timeBeforeFadeInGameOverScreen = 0.5f;
     public float timeToFadeInGameOverScreen = 0.5f;
     public Canvas uiCanvas;
@@ -106,6 +107,7 @@ public class GameStateMachine : MonoBehaviour {
 
     IEnumerator GameOverScreen_Enter()
     {
+        yield return new WaitForSeconds(timeBeforeShowingGameOverScreen);
         gameOverScreenCanvas.SetActive(true);
         foregroundCanvasGroup.alpha = 1;
         playerCamera.transform.rotation = GetDestinationRotation();

@@ -157,7 +157,10 @@ public class DecoyManager : MonoBehaviour {
         for (int i = 0; i<terrains.Length; i++)
         {
             height = terrains[i].SampleHeight(position);
-            if (height != 0) break;
+            if (height != 0)
+            {
+                break;
+            }
         }
         return height;
     }
