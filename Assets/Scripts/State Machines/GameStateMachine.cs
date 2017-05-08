@@ -19,6 +19,7 @@ public class GameStateMachine : MonoBehaviour {
     public float timeToFadeInGameOverScreen = 0.5f;
     public Canvas uiCanvas;
     public Diary diary;
+    public bool lotusEnabled;
 
     private GameObject player;
     private SunCrystalCircleMeter sunCrystalCircleMeter;
@@ -45,7 +46,10 @@ public class GameStateMachine : MonoBehaviour {
         sunCrystalCircleMeter = player.GetComponentInChildren<SunCrystalCircleMeter>();
         fsm = StateMachine<GameStates>.Initialize(this, GameStates.Running);
         initialized = true;
-        playerStateMachine.DisableLotus();
+        if (!lotusEnabled)
+        {
+            playerStateMachine.DisableLotus();
+        }
     }
 
     void Running_Enter()
