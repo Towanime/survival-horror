@@ -34,6 +34,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
     public float minimumLightIntensity = 0f;
     public float maximumLightIntensity = 5f;
     // circle scale vairables
+    private int currentLevel;
     private float currentIndicatorScale;
     private RectTransform indicatorRectangleTransform;
     private float maximumScale;
@@ -156,6 +157,11 @@ public class SunCrystalCircleMeter : MonoBehaviour {
         indicatorImage.color = Color.white;
     }
 
+    public void NextLevel()
+    {
+        SetCircleState(currentLevel + 1);
+    }
+
     private void SetCircleState(int circleState)
     {
         switch (circleState)
@@ -184,6 +190,7 @@ public class SunCrystalCircleMeter : MonoBehaviour {
                 break;
         }
         indicatorRectangleTransform.localScale = new Vector3(indicatorInitialScale, indicatorInitialScale, 0);
+        currentLevel = Mathf.Clamp(circleState, 1, 3);
     }
 
     /// <summary>

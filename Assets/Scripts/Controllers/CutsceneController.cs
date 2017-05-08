@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CutsceneController : MonoBehaviour {
-
+    public SunCrystalCircleMeter crystal;
 	public bool cutsceneActive;
 	public bool fadeInActiveBlack;
 	public bool fadeOutActiveBlack;
@@ -79,6 +79,7 @@ public class CutsceneController : MonoBehaviour {
         monumentLight.enabled = false;
         sunLotus.SetActive(true);
         fadeOutActiveBlack = true;
+        crystal.NextLevel();
     }
 
     public void WhiteFadeInOut()
