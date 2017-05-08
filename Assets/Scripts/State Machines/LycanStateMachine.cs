@@ -163,12 +163,24 @@ public class LycanStateMachine : MonoBehaviour {
             bool hit = Physics.Raycast(cameraPosition, direction, out hitInfo, direction.magnitude);
             if (!hit)
             {
-                spawnPosition.y = lycanY + Terrain.activeTerrain.SampleHeight(spawnPosition);
+                spawnPosition.y = lycanY + GetTerrainHeightAtPosition(spawnPosition);
                 lycan.transform.position = spawnPosition;
                 fsm.ChangeState(LycanStates.WaitingForFirstContact);
                 break;
             }
         }
+    }
+
+    private float GetTerrainHeightAtPosition(Vector3 position)
+    {
+        Terrain[] terrains = Terrain.activeTerrains;
+        float height = 0;
+        for (int i = 0; i < terrains.Length; i++)
+        {
+            height = terrains[i].SampleHeight(position);
+            if (height != 0) break;
+        }
+        return height;
     }
 
     private Vector3 CalculateSpawnPosition()
