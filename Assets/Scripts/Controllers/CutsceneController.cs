@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CutsceneController : MonoBehaviour {
+    public Transform teleportTo;
     public SunCrystalCircleMeter crystal;
 	public bool cutsceneActive;
 	public bool fadeInActiveBlack;
@@ -156,9 +157,11 @@ public class CutsceneController : MonoBehaviour {
                                                         // if it is false then it can begin the fade out
             if (fadeInActiveBlack == false)
             {
+                playerController.transform.position = teleportTo.position;
 				cutsceneCam.SetActive (false);
 				playerController.SetActive(true);
-				sunLotus.SetActive (false);
+                playerController.transform.rotation = teleportTo.rotation;
+                sunLotus.SetActive (false);
             }                
         }
     }
