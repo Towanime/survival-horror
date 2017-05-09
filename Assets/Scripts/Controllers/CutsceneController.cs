@@ -46,6 +46,7 @@ public class CutsceneController : MonoBehaviour {
 	public GameObject monumentSpike6;
 	public GameObject monumentPillar;
 	public GameObject monumentDarkPillar;
+    public ScreenFade screenFade;
 
 	public Light monumentLight;
 
@@ -178,6 +179,8 @@ public class CutsceneController : MonoBehaviour {
                     playerController.transform.rotation = teleportTo.rotation;
                     sunLotus.SetActive(false);
                     safeArea.SetActive(false);
+                    screenFade.SetAlpha(1);
+                    screenFade.FadeOut();
                 }
             }                
         }

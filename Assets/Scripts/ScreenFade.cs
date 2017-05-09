@@ -19,10 +19,7 @@ public class ScreenFade : MonoBehaviour {
 
     void Start()
     {
-        Color newColor = fadeImage.color;
-        newColor.a = startingAlpha;
-        fadeImage.color = newColor;
-
+        SetAlpha(startingAlpha);
         if (fadeOnStartupType == FadeOnStartupType.IN)
         {
             FadeIn();
@@ -32,13 +29,20 @@ public class ScreenFade : MonoBehaviour {
         }
     }
 
-    void FadeIn ()
+    public void FadeIn ()
     {
         fadeImage.CrossFadeAlpha(1, duration, false);
     }
 
-    void FadeOut ()
+    public void FadeOut ()
     {
         fadeImage.CrossFadeAlpha(0, duration, false);
+    }
+
+    public void SetAlpha(float alpha)
+    {
+        Color newColor = fadeImage.color;
+        newColor.a = alpha;
+        fadeImage.color = newColor;
     }
 }
