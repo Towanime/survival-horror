@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class CutsceneController : MonoBehaviour {
+
+    private const string endSceneName = "End Scene";
+    private const int monumentNumber = 3;
+    private static int activations;
+
     public Transform teleportTo;
     public SunCrystalCircleMeter crystal;
     public GameObject particleTrigger;
@@ -54,8 +60,8 @@ public class CutsceneController : MonoBehaviour {
     private bool first;
 
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		cutsceneAudio = GetComponent<AudioSource>();
 		sunLotus.GetComponent<Animator> ().speed = 0;
 	}
@@ -83,6 +89,7 @@ public class CutsceneController : MonoBehaviour {
         sunLotus.SetActive(true);
         fadeOutActiveBlack = true;
         crystal.NextLevel();
+        activations++;
     }
 
     public void WhiteFadeInOut()
@@ -141,7 +148,7 @@ public class CutsceneController : MonoBehaviour {
 			if (fadeOutActiveWhite == false)
             {
                 // set image color to black and no alpha
-                Color blackNoAlpha = Color.black;
+                Color blackNoAlpha = activations == monumentNumber ? Color.white : Color.black;
                 blackNoAlpha.a = 0;
                 fadeImage.color = blackNoAlpha;
                 // start fade
@@ -159,13 +166,19 @@ public class CutsceneController : MonoBehaviour {
                                                         // if it is false then it can begin the fade out
             if (fadeInActiveBlack == false)
             {
-                particleTrigger.SetActive(true);
-                playerController.transform.position = teleportTo.position;
-				cutsceneCam.SetActive (false);
-				playerController.SetActive(true);
-                playerController.transform.rotation = teleportTo.rotation;
-                sunLotus.SetActive (false);
-                safeArea.SetActive(false);
+                if (activations >= monumentNumber)
+                {
+                    SceneManager.LoadScene(endSceneName, LoadSceneMode.Single);
+                } else
+                {
+                    particleTrigger.SetActive(true);
+                    playerController.transform.position = teleportTo.position;
+                    cutsceneCam.SetActive(false);
+                    playerController.SetActive(true);
+                    playerController.transform.rotation = teleportTo.rotation;
+                    sunLotus.SetActive(false);
+                    safeArea.SetActive(false);
+                }
             }                
         }
     }
