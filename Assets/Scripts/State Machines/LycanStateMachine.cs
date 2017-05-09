@@ -249,9 +249,11 @@ public class LycanStateMachine : MonoBehaviour {
             float distance = Vector3.Distance(playerPosition, lycanPosition);
             if (distance > maxDistanceFromPlayer)
             {
-                Vector3 translation = playerPosition - lycanPosition;
-                translation = Vector3.ClampMagnitude(translation, distance - maxDistanceFromPlayer);
-                lycan.transform.Translate(translation, Space.World);
+                Vector3 horizontalTranslation = playerPosition - lycanPosition;
+                horizontalTranslation = Vector3.ClampMagnitude(horizontalTranslation, distance - maxDistanceFromPlayer);
+                Vector3 nextPosition = lycanPosition + horizontalTranslation;
+                nextPosition.y = lycanY + GetTerrainHeightAtPosition(nextPosition);
+                lycan.transform.Translate(nextPosition - lycan.transform.position, Space.World);
             }
         }
     }
